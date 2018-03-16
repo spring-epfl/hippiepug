@@ -3,16 +3,16 @@
 from setuptools import setup
 
 install_requires = [
-    'six',
-    'msgpack'
+    'six==1.11.0',
+    'msgpack==0.5.6'
 ]
 tests_require = install_requires + [
-    "pytest",
+    "pytest==3.4.2",
 ]
 
 setup(
     name='hippiepug',
-    version=1.0,
+    version=0.1,
     description='Merkle trees and hash chains with a flexible storage backend.',
     author='Bogdan Kulynych',
     author_email='hello@bogdankulynych.me',
