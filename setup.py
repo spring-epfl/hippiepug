@@ -12,7 +12,7 @@ tests_require = install_requires + [
 
 setup(
     name='hippiepug',
-    version=0.1,
+    version=0.0,
     description='Merkle trees and hash chains with a flexible storage backend.',
     author='Bogdan Kulynych',
     author_email='hello@bogdankulynych.me',
