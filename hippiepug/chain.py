@@ -3,10 +3,11 @@ import collections
 
 import msgpack
 
-from . import utils
+from .utils import Serializable
+from .store import DictStore
 
 
-class BaseBlock(utils.Serializable):
+class BaseBlock(Serializable):
     """
     Customizable base skip-list block.
 
@@ -189,6 +190,8 @@ class Chain(object):
         :type _cache: ``dict``
         """
         self._block_cls = block_cls
+        if object_store is None:
+            object_store = DictStore()
         self.object_store = object_store
         self.head = head
         self._cache = _cache or {}

@@ -2,7 +2,7 @@ import pytest
 import six
 
 from hippiepug.chain import MsgpackBlock, Chain
-from hippiepug.store import DictStore, IntegrityValidationError
+from hippiepug.store import IntegrityValidationError
 from hippiepug import utils
 
 
