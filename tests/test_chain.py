@@ -2,8 +2,7 @@ import pytest
 import six
 
 from hippiepug.chain import MsgpackBlock, Chain
-from hippiepug.store import IntegrityValidationError
-from hippiepug import utils
+from hippiepug.store import DictStore, IntegrityValidationError
 
 
 CHAIN_SIZES = [1, 2, 3, 10]
