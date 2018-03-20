@@ -68,26 +68,26 @@ class Tree(object):
 
     :param object_store: Object store
     :param head: The hash of the head block
-    :param _cache: Cache
-    :type _cache: dict
+    :param cache: Cache
+    :type cache: dict
     """
 
     def __init__(self, object_store, head,
-                 _cache=None):
+                 cache=None):
 
         self.object_store = object_store
         self.head = head
-        self._cache = _cache or {}
+        self.cache = cache or {}
 
     def get_node_by_hash(self, node_hash):
-        if node_hash in self._cache:
-            return self._cache[node_hash]
+        if node_hash in self.cache:
+            return self.cache[node_hash]
 
         serialized_node = self.object_store.get(
                 node_hash, check_integrity=True)
         if serialized_node is not None:
             node = Node.deserialize(serialized_node)
-            self._cache[node_hash] = block
+            self.cache[node_hash] = block
         return raw_node.deserialize()
 
     def get_inclusion_evidence(self, lookup_key):

@@ -18,16 +18,12 @@ class BaseBlock(Serializable):
     :param payload: Block payload
     :type payload: Byte array
 
-    :param _index: Sequence index
-    :param _fingers: Skip-list fingers (list of back-pointers to
+    :param index: Sequence index
+    :param fingers: Skip-list fingers (list of back-pointers to
                      previous blocks)
-    :param _hash_value: Block hash. Set only if the block is committed
-    :param _is_read_only: Whether block could be committed.
-    :param _chain: Chain to which the block should belong
-
-    .. warning::
-        Be sure to build new blocks using :py:func:`Chain.make_next_block`,
-        unless you know what you are doing.
+    :param hash_value: Block hash, if the block has been committed.
+    :param is_read_only: Whether block can be committed.
+    :param chain: Chain to which the block should belong.
 
     .. warning::
         You need to take extra care when defining custom serializations. Be
@@ -130,17 +126,19 @@ class MsgpackBlock(BaseBlock):
     """Block that is msgpack-serializable."""
 
     def serialize(self):
+        """Serialize."""
         return msgpack.packb((self.index, self.fingers, self.payload),
                              use_bin_type=True)
 
     @classmethod
     def deserialize(cls, serialized_block):
+        """Deserialize."""
         index, fingers, payload = msgpack.unpackb(serialized_block, raw=False)
         return cls(payload, index=index, fingers=fingers)
 
 
 class Chain(object):
-    """Verifiable skip-chain.
+    """Verifiable deterministic skip-chain.
 
     This class handles all interactions with the backend. It also supports
     customizable blocks to which you can add some complex behaviour.
@@ -181,38 +179,35 @@ class Chain(object):
             return self.__next__()
 
     def __init__(self, block_cls=None, object_store=None, head=None,
-                 _cache=None):
+                 cache=None):
         """
         :param block_cls: Block class
         :param object_store: Object store
         :param head: The hash of the head block
-        :param _cache: Cache
-        :type _cache: ``dict``
+        :param cache: Cache
+        :type cache: ``dict``
         """
         self._block_cls = block_cls
         if object_store is None:
             object_store = DictStore()
         self.object_store = object_store
         self.head = head
-        self._cache = _cache or {}
+        self._cache = cache or {}
 
     @property
     def head_block(self):
-        """Return the latest block in the chain."""
+        """The latest block in the chain."""
         return self.get_block_by_hash(self.head)
 
     def get_block_cls(self):
-        """Return the block class.
-
-        Defaults to :py:class:`BaseBlock`.
-        """
+        """Return the block class."""
 
         if self._block_cls is not None:
             return self._block_cls
         elif hasattr(self, 'block_cls') and self.block_cls is not None:
             return self.block_cls
         else:
-            return BaseBlock
+            raise TypeError('Block class not defined.')
 
     def make_next_block(self, *args, **kwargs):
         """Prepare the next block in the chain."""
@@ -238,8 +233,9 @@ class Chain(object):
         """Retrieve a block by its index.
 
         Optionally returns inclusion evidence, that is a list of intermediate
-        blocks, sufficient verify the includion of the retrieved block. If
-        the block is not found, returns None. If the index is out of bounds,
+        blocks, sufficient to verify the includion of the retrieved block.
+
+        If the block is not found, returns None. If the index is out of bounds,
         raises IndexError.
 
         :param index: Block index
