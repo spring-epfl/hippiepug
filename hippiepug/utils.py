@@ -1,58 +1,44 @@
 # -*- coding: utf-8 -*-
 
-import doctest
+import abc
 import six
 import threading
 import contextlib
 
-from hashlib import sha256 as hash_fn
+from hashlib import sha256
 from binascii import hexlify
 
 
-doctest.IGNORE_EXCEPTION_DETAIL = True
-
-
-class IntegrityValidationError(Exception):
-    pass
-
-
-def binary_hash(item):
+def sha256_ascii_hash(item):
     """
-    >>> binary_hash(b'value')[:4] == six.b('\xcdB@M')
+    >>> sha256_ascii_hash(b'value')[:4] == 'cd42'
     True
     """
-    return hash_fn(item).digest()
+    return sha256(item).hexdigest()
 
 
-def ascii_hash(item):
-    """
-    >>> ascii_hash(b'value')[:4] == six.u('cd42')
-    True
-    """
-    return hexlify(binary_hash(item)).decode('utf-8')
+class Serializable(object):
+    """Serializable object interface."""
+    __metaclass__  = abc.ABCMeta
+
+    @abc.abstractmethod
+    def serialize(self):
+        """Serialize obj, in particular for hashing or storing."""
+        pass
+
+    @classmethod
+    @abc.abstractmethod
+    def deserialize(cls, serialized_obj):
+        """Deserialize obj."""
+        pass
 
 
-class HashableMixin(object):
-    @property
-    def hid(self):
-        """Return the hash of a serializable object."""
-        serialized = self.serialize()
-        return ascii_hash(serialized)
+class DummySerializableObject(Serializable):
+    def __init__(self, obj):
+        self.obj = obj
 
-    def __eq__(self, other):
-        return self.hid == other.hid
+    def serialize(self):
+        return self.obj
 
-
-def check_hash(hash_value, item):
-    """
-    >>> a = b'Correct.'
-    >>> b = b'Incorrect'
-    >>> h = ascii_hash(a)
-    >>> check_hash(h, a)
-    >>> check_hash(h, b)
-    Traceback (most recent call last):
-        ...
-    IntegrityValidationError: Object hash mismatch.
-    """
-    if hash_value != ascii_hash(item):
-        raise IntegrityValidationError('Object hash mismatch.')
+    def deserialize(cls, serialized_obj):
+        return cls(serialized_obj)
