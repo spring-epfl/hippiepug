@@ -100,9 +100,20 @@ def test_chain_commit_blocks(chain):
 
 def test_commit_fails_if_chain_undefined(block):
     """
-    Commiting the block should fail if no chain is associated.
+    Committing the block should fail if no chain is associated.
     """
+    block._is_read_only = False
     with pytest.raises(ValueError):
+        block.commit()
+
+
+def test_commit_fails_if_block_is_read_only(chain):
+    """
+    Committing the block should fail if block is read-only.
+    """
+    block = chain.make_next_block()
+    block._is_read_only = True
+    with pytest.raises(TypeError):
         block.commit()
 
 

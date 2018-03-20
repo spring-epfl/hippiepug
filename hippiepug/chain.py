@@ -40,16 +40,16 @@ class BaseBlock(utils.Serializable):
     """
     __metaclass__ = abc.ABCMeta
 
-    def __init__(self, payload=None, _index=0, _fingers=None, _chain=None,
-                 _hash_value=None, _is_read_only=False):
+    def __init__(self, payload=None, index=0, fingers=None, chain=None,
+                 hash_value=None, is_read_only=True):
         self.payload = payload
-        self._index = _index
-        if _fingers is None:
-            _fingers = []
-        self._fingers = _fingers
-        self._chain = _chain
-        self._hash_value = _hash_value
-        self._is_read_only = _is_read_only
+        self._index = index
+        if fingers is None:
+            fingers = []
+        self._fingers = fingers
+        self._chain = chain
+        self._hash_value = hash_value
+        self._is_read_only = is_read_only
 
     @property
     def index(self):
@@ -70,7 +70,7 @@ class BaseBlock(utils.Serializable):
                 'payload="{self.payload}")').format(self=self)
 
     @classmethod
-    def _make_next_block(cls, current_block, chain=None, *args, **kwargs):
+    def _make_next_block(cls, current_block, *args, **kwargs):
         """Build an empty subsequent block.
 
         .. warning::
@@ -82,7 +82,7 @@ class BaseBlock(utils.Serializable):
         """
 
         if current_block is None:
-            return cls(_index=0, _fingers=None, _chain=chain, *args, **kwargs)
+            return cls(index=0, fingers=None, *args, **kwargs)
 
         new_index = current_block.index + 1
         new_fingers = [(current_block.index, current_block.hash_value)]
@@ -91,7 +91,7 @@ class BaseBlock(utils.Serializable):
         new_fingers += [f for f in current_block.fingers if f[0]
                         in finger_indices]
 
-        new_block = cls(_index=new_index, _fingers=new_fingers, _chain=chain,
+        new_block = cls(index=new_index, fingers=new_fingers,
                         *args, **kwargs)
         return new_block
 
@@ -135,7 +135,7 @@ class MsgpackBlock(BaseBlock):
     @classmethod
     def deserialize(cls, serialized_block):
         index, fingers, payload = msgpack.unpackb(serialized_block, raw=False)
-        return cls(payload, _index=index, _fingers=fingers)
+        return cls(payload, index=index, fingers=fingers)
 
 
 class Chain(object):
@@ -214,7 +214,7 @@ class Chain(object):
     def make_next_block(self, *args, **kwargs):
         """Prepare the next block in the chain."""
         return self.get_block_cls()._make_next_block(
-            current_block=self.head_block, chain=self,
+            current_block=self.head_block, chain=self, is_read_only=False,
             *args, **kwargs)
 
     def get_block_by_hash(self, hash_value):
