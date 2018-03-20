@@ -6,6 +6,13 @@ install_requires = [
     'six>=1.11.0',
     'msgpack>=0.5.6'
 ]
+setup_requires = [
+    'pytest-runner',
+]
+
+test_requires = [
+    'pytest'
+]
 
 setup(
     name='hippiepug',
@@ -15,5 +22,7 @@ setup(
     author_email='hello@bogdankulynych.me',
     packages=['hippiepug'],
     license="MIT",
-    install_requires=install_requires
+    install_requires=install_requires,
+    setup_requires=setup_requires,
+    tests_require=test_requires,
 )
