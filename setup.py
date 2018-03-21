@@ -17,7 +17,9 @@ test_requires = [
 setup(
     name='hippiepug',
     version=0.1,
-    description='Merkle trees and hash chains with a flexible storage backend.',
+    description=(
+        'Merkle trees and log(n) hash chains with a flexible '
+        'storage backend.'),
     author='Bogdan Kulynych',
     author_email='hello@bogdankulynych.me',
     packages=['hippiepug'],
