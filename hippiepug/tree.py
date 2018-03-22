@@ -4,10 +4,12 @@ FIXME: Trees are not finished.
 
 import abc
 import collections
+import os
+
 import msgpack
 
 from .utils import Serializable
-from .store import DictStore
+from .store import Sha256DictStore
 
 
 class BaseNode(Serializable):
@@ -43,7 +45,19 @@ class BaseNode(Serializable):
 
     @property
     def is_leaf(self):
-        return self.left_hid is None and self.right_hid is None
+        return self.left_hash is None and self.right_hash is None
+
+    def __repr__(self):
+        return ('{class_name}('
+                'lookup_prefix={lookup_prefix}, '
+                'payload_hash={payload_hash}, '
+                'left_hash={left_hash}, '
+                'right_hash={right_hash})').format(
+                        class_name=self.__class__.__name__,
+                        lookup_prefix=repr(self.lookup_prefix),
+                        payload_hash=repr(self.payload_hash),
+                        left_hash=repr(self.left_hash),
+                        right_hash=repr(self.right_hash))
 
 
 class MsgpackNode(BaseNode):
@@ -55,6 +69,7 @@ class MsgpackNode(BaseNode):
                     self.left_hash, self.right_hash),
                 use_bin_type=True)
 
+    @classmethod
     def deserialize(cls, serialized_node):
         """Deserialize node."""
         unpacked = msgpack.unpackb(serialized_node, raw=False)
@@ -126,7 +141,7 @@ class TreeMapBuilder(object):
     def __init__(self, node_cls, object_store=None):
         self.node_cls = node_cls
         if object_store is None:
-            object_store = DictStore()
+            object_store = Sha256DictStore()
         self.object_store = object_store
         self.items = {}
 
@@ -139,37 +154,42 @@ class TreeMapBuilder(object):
     def _make_subtree(self, items):
         """Build a tree from sorted items."""
         if len(items) == 0:
-            return None, []
+            raise ValueError("No items to put.")
         if len(items) == 1:
             (key, serialized_obj), = items
             value_hash = self.object_store.hash_object(serialized_obj)
             leaf = self.node_cls(lookup_prefix=key, payload_hash=value_hash)
-            return leaf, []
+            return [leaf]
         else:
             middle = len(items) // 2
             pivot_key, pivot_obj = items[middle]
             left_partition = items[:middle]
-            right_partition = items[middle+1:]
-            left_child, left_subtree_nodes = self._make_subtree(
-                    left_partition)
-            right_child, right_subtree_nodes = self._make_subtree(
-                    right_partition)
+            right_partition = items[middle:]
+            left_subtree_nodes = self._make_subtree(left_partition)
+            right_subtree_nodes = self._make_subtree(right_partition)
 
-            # Compute hashes of children.
+            # Compute minimal lookup prefixes
+            pivot_keys = [pivot_key]
+            if left_subtree_nodes:
+                pivot_keys.append(left_subtree_nodes[0].lookup_prefix)
+            if right_subtree_nodes:
+                pivot_keys.append(right_subtree_nodes[0].lookup_prefix)
+            common_prefix = os.path.commonprefix(pivot_keys)
+            pivot_key = pivot_key[:max(1, len(common_prefix))]
+
+            # Compute hashes of direct children.
             left_hash = None
             right_hash = None
-            if left_child is not None:
-                left_hash=self.object_store.hash_object(
-                    left_child.serialize())
-            if right_child is not None:
-                right_hash=self.object_store.hash_object(
-                    right_child.serialize())
+            left_hash=self.object_store.hash_object(
+                left_subtree_nodes[0].serialize())
+            right_hash=self.object_store.hash_object(
+                right_subtree_nodes[0].serialize())
 
             pivot_node = self.node_cls(
                     lookup_prefix=pivot_key,
                     left_hash=left_hash, right_hash=right_hash)
 
-            return pivot_node, left_subtree_nodes + right_subtree_nodes
+            return [pivot_node] + left_subtree_nodes + right_subtree_nodes
 
     def commit(self):
         """
@@ -179,10 +199,16 @@ class TreeMapBuilder(object):
         :type items: Byte string is best
         """
         items = sorted(self.items.items(), key=lambda t: t[0])
-        head_node, subtree_nodes = self._make_subtree(items)
-        for node in [head_node] + subtree_nodes:
+        nodes = self._make_subtree(items)
+
+        # Put intermediate nodes into the store.
+        for node in nodes:
             serialized_node = node.serialize()
             self.object_store.add(serialized_node)
+
+        # Put items themselves into the store.
         for serialized_obj in self.items.values():
             self.object_store.add(serialized_obj)
+
+        head_node = nodes[0]
         head = self.object_store.hash_object(head_node.serialize())

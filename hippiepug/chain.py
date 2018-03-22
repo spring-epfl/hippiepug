@@ -4,7 +4,7 @@ import collections
 import msgpack
 
 from .utils import Serializable
-from .store import DictStore
+from .store import Sha256DictStore
 
 
 class BaseBlock(Serializable):
@@ -189,7 +189,7 @@ class Chain(object):
         """
         self._block_cls = block_cls
         if object_store is None:
-            object_store = DictStore()
+            object_store = Sha256DictStore()
         self.object_store = object_store
         self.head = head
         self._cache = cache or {}

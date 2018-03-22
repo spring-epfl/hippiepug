@@ -1,9 +1,9 @@
 import pytest
 
-from hippiepug.store import DictStore
+from hippiepug.store import Sha256DictStore
 
 
 @pytest.fixture
 def object_store():
-    return DictStore()
+    return Sha256DictStore()
 

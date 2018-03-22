@@ -1,6 +1,7 @@
 import abc
+from binascii import hexlify
 
-from . import utils
+from hashlib import sha256
 
 
 class BaseStore(object):
@@ -43,32 +44,15 @@ class BaseStore(object):
         pass
 
 
-class Sha256HashMixin(object):
-    def hash_object(cls, serialized_obj):
-        """SHA256 hex hash of a serialized object."""
-        return utils.sha256_ascii_hash(serialized_obj)
-
-
 class IntegrityValidationError(Exception):
     pass
 
 
-class DictStore(Sha256HashMixin, BaseStore):
+class BaseDictStore(BaseStore):
     """
-    Store using SHA256 hash function and dict-like backend.
+    Store with dict-like backend.
 
-    :param backend: dict-like object
-
-    >>> store = DictStore()
-    >>> obj = b'dummy'
-    >>> obj_hash = utils.sha256_ascii_hash(obj)
-    >>> store.add(obj)
-    >>> obj_hash in store
-    True
-    >>> b'nonexistent' in store
-    False
-    >>> store.get(obj_hash) == obj
-    True
+    :type backend: dict-like
     """
 
     def __init__(self, backend=None):
@@ -106,3 +90,28 @@ class DictStore(Sha256HashMixin, BaseStore):
     def __repr__(self):
         return '{self.__class__.__name__}({self._backend})'.format(
             self=self)
+
+
+class Sha256DictStore(BaseDictStore):
+    """
+    Dict-based store using truncated SHA256 hex-encoded hashes.
+
+    >>> store = Sha256DictStore()
+    >>> obj = b'dummy'
+    >>> obj_hash = store.hash_object(obj)
+    >>> store.add(obj)
+    >>> obj_hash in store
+    True
+    >>> b'nonexistent' in store
+    False
+    >>> store.get(obj_hash) == obj
+    True
+    """
+
+    HASH_SIZE_BYTES = 8
+
+    def hash_object(cls, serialized_obj):
+        """SHA256 hex hash of a serialized object."""
+        hash_bytes = sha256(serialized_obj).digest()
+        hexdigest = hexlify(hash_bytes[:Sha256DictStore.HASH_SIZE_BYTES])
+        return hexdigest.decode('utf-8')

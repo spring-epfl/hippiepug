@@ -2,15 +2,10 @@ import pytest
 import six
 
 from hippiepug.chain import MsgpackBlock, Chain
-from hippiepug.store import DictStore, IntegrityValidationError
+from hippiepug.store import Sha256DictStore, IntegrityValidationError
 
 
 CHAIN_SIZES = [1, 2, 3, 10]
-
-
-@pytest.fixture
-def object_store():
-    return DictStore()
 
 
 @pytest.fixture
@@ -207,5 +202,5 @@ def test_chain_evidence(chain_factory, object_store):
 
     chain2 = chain_factory.make(block_cls=MsgpackBlock)
     chain2.head = chain1.head
-    chain2.object_store = DictStore(serialized_evidence)
+    chain2.object_store = object_store.__class__(serialized_evidence)
     assert chain2.get_block_by_index(2).payload == 'Block 2'

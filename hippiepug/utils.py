@@ -9,14 +9,6 @@ from hashlib import sha256
 from binascii import hexlify
 
 
-def sha256_ascii_hash(item):
-    """
-    >>> sha256_ascii_hash(b'value')[:4] == 'cd42'
-    True
-    """
-    return sha256(item).hexdigest()
-
-
 class Serializable(object):
     """Serializable object interface."""
     __metaclass__  = abc.ABCMeta
@@ -31,14 +23,3 @@ class Serializable(object):
     def deserialize(cls, serialized_obj):
         """Deserialize obj."""
         pass
-
-
-class DummySerializableObject(Serializable):
-    def __init__(self, obj):
-        self.obj = obj
-
-    def serialize(self):
-        return self.obj
-
-    def deserialize(cls, serialized_obj):
-        return cls(serialized_obj)
