@@ -13,7 +13,8 @@ setup_requires = [
 
 test_requires = [
     'pytest',
-    'mock'
+    'mock',
+    'pytest-lazy-fixture'
 ]
 
 setup(
