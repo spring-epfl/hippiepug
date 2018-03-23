@@ -141,17 +141,6 @@ class BlockBuilder(object):
     :param index: Sequence index
     :param fingers: Skip-list fingers (list of back-pointers to
                      previous blocks)
-
-    .. warning::
-        You need to take extra care when defining custom serializations. Be
-        sure that your serialization includes:
-
-        - ``self.index``
-        - ``self.fingers``
-        - Your payload
-
-        Unless this is done, the security of the hash chain is screwed, since
-        it's the serialized version of a block that gets hashed.
     """
     def __init__(self, chain, payload=None):
         self._chain = chain
