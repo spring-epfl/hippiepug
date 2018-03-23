@@ -19,7 +19,7 @@ Tree
 Basic containers
 ================
 
-.. automodule:: hippiehug.struct
+.. automodule:: hippiepug.struct
    :members:
 
 =====
