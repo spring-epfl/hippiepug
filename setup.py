@@ -4,14 +4,16 @@ from setuptools import setup
 
 install_requires = [
     'six>=1.11.0',
-    'msgpack>=0.5.6'
+    'msgpack>=0.5.6',
+    'attrs>=17.4.0'
 ]
 setup_requires = [
     'pytest-runner',
 ]
 
 test_requires = [
-    'pytest'
+    'pytest',
+    'mock'
 ]
 
 setup(

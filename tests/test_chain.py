@@ -1,7 +1,7 @@
 import pytest
 import six
 
-from unittest.mock import MagicMock
+from mock import MagicMock
 
 from hippiepug.struct import ChainBlock
 from hippiepug.chain import Chain, BlockBuilder
