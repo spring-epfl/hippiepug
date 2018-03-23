@@ -1,8 +1,13 @@
 """
-Merkle Tree nodes.
+Building blocks.
 """
-
 import attr
+
+@attr.s
+class ChainBlock(object):
+    payload = attr.ib()
+    index = attr.ib(default=0)
+    fingers = attr.ib(default=attr.Factory(list))
 
 
 @attr.s

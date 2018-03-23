@@ -6,8 +6,7 @@ import abc
 import collections
 import os
 
-from .store import Sha256DictStore
-from .node import TreeNode, TreeLeaf
+from .struct import TreeNode, TreeLeaf
 from .pack import encode, decode
 
 
@@ -72,9 +71,7 @@ class TreeMapBuilder(object):
        * :py:class:`hippiepug.chain.Chain`
     """
 
-    def __init__(self, object_store=None):
-        if object_store is None:
-            object_store = Sha256DictStore()
+    def __init__(self, object_store):
         self.object_store = object_store
         self.items = {}
 

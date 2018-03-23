@@ -3,20 +3,14 @@ import collections
 
 import msgpack
 
-from .block import Block
-from .store import Sha256DictStore
+from .struct import ChainBlock
 from .pack import encode, decode
 
 
 class Chain(object):
-    """Verifiable deterministic skip-chain.
+    """Skipchain (hash-chain with skip-list pointers).
 
-    This class handles all interactions with the backend. It also supports
-    customizable blocks to which you can add some complex behaviour.
-
-    Skip-chain is considered mutable, that is you should always be able to
-    append a new block to a given chain. The interface is thus different from
-    Trees, that are constructed once, and then are immutable.
+    To add a new block to a chain, use :py:class:`BlockBuilder`.
 
     .. warning::
        All read accesses are cached. The cache is assumed to be trusted,
@@ -49,18 +43,14 @@ class Chain(object):
         def next(self):
             return self.__next__()
 
-    def __init__(self, block_cls=None, object_store=None, head=None,
+    def __init__(self, object_store, head=None,
                  cache=None):
         """
-        :param block_cls: Block class
         :param object_store: Object store
         :param head: The hash of the head block
         :param cache: Cache
         :type cache: ``dict``
         """
-        self._block_cls = block_cls
-        if object_store is None:
-            object_store = Sha256DictStore()
         self.object_store = object_store
         self.head = head
         self._cache = cache or {}
@@ -69,22 +59,6 @@ class Chain(object):
     def head_block(self):
         """The latest block in the chain."""
         return self.get_block_by_hash(self.head)
-
-    def get_block_cls(self):
-        """Return the block class."""
-
-        if self._block_cls is not None:
-            return self._block_cls
-        elif hasattr(self, 'block_cls') and self.block_cls is not None:
-            return self.block_cls
-        else:
-            raise TypeError('Block class not defined.')
-
-    def make_next_block(self, *args, **kwargs):
-        """Prepare the next block in the chain."""
-        return self.get_block_cls()._make_next_block(
-            current_block=self.head_block, chain=self, is_read_only=False,
-            *args, **kwargs)
 
     def get_block_by_hash(self, hash_value):
         """Retrieve block by its hash.
@@ -138,20 +112,119 @@ class Chain(object):
                       if f >= index][0]
             current_block = self.get_block_by_hash(hash_value)
 
-    def _commit_block(self, block):
-        """Commit new block to the object store."""
+    def _append(self, block):
+        """Append block to the chain."""
         serialized_block = encode(block)
-        self.head = self.object_store.hash_object(serialized_block)
+        self.head = self.object_store.add(serialized_block)
         self._cache[self.head] = block
-        self.object_store.add(serialized_block)
-        return self.head
 
     def __iter__(self):
         return Chain.ChainIterator(self.head_block.index, self)
 
     def __repr__(self):
         return ('{self.__class__.__name__}('
-                'block_cls={block_cls}, '
                 'object_store={self.object_store}, '
                 'head=\'{self.head}\')').format(
-            self=self, block_cls=self.get_block_cls())
+                    self=self)
+
+
+class BlockBuilder(object):
+    """Customizable builder of skipchain blocks.
+
+    You can override the pre-commit hook (:py:func:`BlockBuilder.pre_commit``)
+    to modify the payload before the block is committed to a chain. This
+    is needed, say, if you want to sign the payload before commiting.
+
+    :param chain: Chain to which the block should belong.
+    :param payload: Block payload
+    :type payload: Byte array
+    :param index: Sequence index
+    :param fingers: Skip-list fingers (list of back-pointers to
+                     previous blocks)
+
+    .. warning::
+        You need to take extra care when defining custom serializations. Be
+        sure that your serialization includes:
+
+        - ``self.index``
+        - ``self.fingers``
+        - Your payload
+
+        Unless this is done, the security of the hash chain is screwed.
+    """
+    def __init__(self, chain, payload=None):
+        self._chain = chain
+        self._block = self._make_next_block(payload=payload)
+
+    @property
+    def chain(self):
+        return self._chain
+
+    @property
+    def payload(self):
+        return self._block.payload
+
+    @payload.setter
+    def payload(self, value):
+        self._block.payload = value
+
+    @property
+    def index(self):
+       return self._block.index
+
+    @property
+    def fingers(self):
+       return self._block.fingers
+
+    @staticmethod
+    def skipchain_indices(index):
+        """Finger indices for the current index."""
+        return set(index - 1 - ((index - 1) % (2**f)) for f in range(64))
+
+    def _make_next_block(self, payload=None):
+        """Prepare an empty subsequent block.
+
+        This method prefills the index and fingers. Payload is expected
+        to be added before commiting to the chain.
+        """
+
+        new_block = ChainBlock(payload=payload)
+        if self.chain.head is None:
+            return new_block
+
+        current_block = self.chain.head_block
+        new_block.index = current_block.index + 1
+
+        finger_indices = self.skipchain_indices(new_block.index)
+        new_fingers = [(current_block.index, self.chain.head)]
+        # TODO: Do we also need to generate new fingers here?
+        for index, prev_hash in current_block.fingers:
+            if index in finger_indices:
+                new_fingers.append((index, prev_hash))
+
+        new_block.fingers = new_fingers
+        return new_block
+
+    def commit(self):
+        """Commit the block to the associated chain.
+
+        :return: The block that was committed.
+        """
+        if self._chain is None:
+            raise ValueError('Chain undefined.')
+
+        self.pre_commit()
+        current_block = self._block
+        self.chain._append(current_block)
+        self._block = self._make_next_block()
+        return current_block
+
+    def pre_commit(self):
+        """Pre-commit hook.
+
+        This can be overriden. For example, you can add a signature
+        that includes index and fingers into your payload before
+        the block is committed.
+        """
+        pass
+

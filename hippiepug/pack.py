@@ -3,21 +3,20 @@ from warnings import warn
 
 import msgpack
 
-from .block import Block
-from .node import TreeLeaf, TreeNode
+from .struct import ChainBlock, TreeNode, TreeLeaf
 
 
 PROTO_VERSION = 0
 
-BLOCK_MARKER = 0
+CHAIN_BLOCK_MARKER = 0
 TREE_NODE_MARKER = 1
 TREE_LEAF_MARKER = 2
 OTHER_MARKER = 3
 
 
 def msgpack_encoder(obj):
-    if isinstance(obj, Block):
-        marker = BLOCK_MARKER
+    if isinstance(obj, ChainBlock):
+        marker = CHAIN_BLOCK_MARKER
         obj_repr = (obj.index, obj.fingers, obj.payload)
 
     elif isinstance(obj, TreeNode):
@@ -44,9 +43,9 @@ def msgpack_decoder(serialized_obj):
         warn('Serialization protocol version mismatch. '
              'Expected: %s, got: %s' % (PROTO_VERSION, proto_version))
 
-    if marker == BLOCK_MARKER:
+    if marker == CHAIN_BLOCK_MARKER:
         index, fingers, payload = obj_repr
-        return Block(payload=payload, index=index, fingers=fingers)
+        return ChainBlock(payload=payload, index=index, fingers=fingers)
 
     elif marker == TREE_NODE_MARKER:
         pivot_key, left_hash, right_hash = obj_repr

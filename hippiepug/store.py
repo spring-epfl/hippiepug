@@ -40,6 +40,7 @@ class BaseStore(object):
         Put the object in the store.
 
         :param serialized_obj: Object, serialized to bytes
+        :return: Hash of the object.
         """
         pass
 
@@ -86,6 +87,7 @@ class BaseDictStore(BaseStore):
         obj_hash = self.hash_object(serialized_obj)
         if not obj_hash in self:
             self._backend[obj_hash] = serialized_obj
+        return obj_hash
 
     def __repr__(self):
         return '{self.__class__.__name__}({self._backend})'.format(
@@ -99,11 +101,12 @@ class Sha256DictStore(BaseDictStore):
     >>> store = Sha256DictStore()
     >>> obj = b'dummy'
     >>> obj_hash = store.hash_object(obj)
-    >>> store.add(obj)
+    >>> store.add(obj) == obj_hash
+    True
     >>> obj_hash in store
     True
-    >>> b'nonexistent' in store
-    False
+    >>> b'nonexistent' not in store
+    True
     >>> store.get(obj_hash) == obj
     True
     """
