@@ -1,7 +1,7 @@
 hippiepug
 =========
 
-Efficient Merkle trees and log(n) hash chains.
+Sublinear-traversal blockchains and efficient key-value Merkle trees 
 
 .. image:: https://readthedocs.org/projects/hippiepug/badge/?version=latest
    :target: http://hippiepug.readthedocs.io/?badge=latest
@@ -17,22 +17,22 @@ Efficient Merkle trees and log(n) hash chains.
 
 .. inclusion-marker-do-not-remove
 
-This library provides implementations of three cryptographiic data structures: hash skipchain, verifiable unique-resolution dictionary, and verifiable set, that are meant to be used on top of a content-addressable storage.
-Each of the data structures supports logarithmic queries, and logarithmic proofs of inclusion:
+This library provides implementations of two cryptographiic data structures:
+  * Blockchains with log(n) sublinear traversal, implemented as deterministic hash skipchains
+  * Verifiable unique-resolution dictionary implemented as a Merkle prefix tree
+    
+Both are meant to be used with a content-addressable storag. Each data structures supports logarithmic queries, and logarithmic proofs of inclusion:
 
 +-----------------------+--------------------------+----------------------+----------------+---------------------+
 |                       | Retrievals per query     | Inclusion proof size | Append         | Data structure size |
 +=======================+==========================+======================+================+=====================+
-| Hash skipchain        | log(n)                   | O(log(n))            | O(1)           | O(n)                |
+| Hash skipchain        | ~log(n)                  | O(log(n))            | O(1)           | O(n)                |
 +-----------------------+--------------------------+----------------------+----------------+---------------------+
-| Verifiable dictionary | log(n)                   | O(log(n))            | Immutable      | O(n)                |
-+-----------------------+--------------------------+----------------------+----------------+---------------------+
-| Verifiable set        | log(n)                   | O(log(n))            | Immutable      | O(n)                |
+| Verifiable dictionary | ~log(n)                  | O(log(n))            | Immutable      | O(n)                |
 +-----------------------+--------------------------+----------------------+----------------+---------------------+
 
 
-with *n* being the size for the map and the set, or the number of blocks in the case of a chain.
-
+with *n* being the size for the dictionary, or the number of blocks in the case of a chain.
 
 Acks
 ----
