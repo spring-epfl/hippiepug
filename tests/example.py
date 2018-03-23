@@ -1,12 +1,13 @@
-# from hippiepug.block import Block
-# from hippiepug.chain import Chain
+from hippiepug.chain import Chain, BlockBuilder
+from hippiepug.store import Sha256DictStore
+from hippiepug.pack import decode
 
 
-# chain = Chain(Block)
+store = Sha256DictStore()
+chain = Chain(store)
 
-# block = chain.make_next_block()
-# block.payload = 'Hello, world!'
-# block.commit()
+block_builder = BlockBuilder(chain)
+block_builder.payload = 'Hello, world!'
+block = block_builder.commit()
 
-# assert chain.head == block.hash_value
-
+assert decode(store.get(chain.head)) == block
