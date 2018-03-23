@@ -8,7 +8,7 @@ from .pack import encode, decode
 
 
 class Chain(object):
-    """Skipchain (hash-chain with skip-list pointers).
+    """Hash skipchain (hash-chain with skip-list pointers).
 
     To add a new block to a chain, use :py:class:`BlockBuilder`.
 
@@ -150,7 +150,8 @@ class BlockBuilder(object):
         - ``self.fingers``
         - Your payload
 
-        Unless this is done, the security of the hash chain is screwed.
+        Unless this is done, the security of the hash chain is screwed, since
+        it's the serialized version of a block that gets hashed.
     """
     def __init__(self, chain, payload=None):
         self._chain = chain

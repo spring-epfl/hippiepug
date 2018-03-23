@@ -1,3 +1,19 @@
+"""
+Serializers for chain blocks and tree nodes.
+
+.. warning::
+    You need to take extra care when defining custom serializations. Be
+    sure that your serialization includes all the fields in the original
+    structure. E.g., for chain blocks:
+
+    - ``self.index``
+    - ``self.fingers``
+    - Your payload
+
+    Unless this is done, the integrity of the data structures is screwed, since
+    it's the serialized version of nodes and blocks that are hashed.
+"""
+
 from enum import Enum
 from warnings import warn
 
@@ -15,6 +31,8 @@ OTHER_MARKER = 3
 
 
 def msgpack_encoder(obj):
+    """Represent structure as tuple and serialize using msgpack."""
+
     if isinstance(obj, ChainBlock):
         marker = CHAIN_BLOCK_MARKER
         obj_repr = (obj.index, obj.fingers, obj.payload)
@@ -36,6 +54,8 @@ def msgpack_encoder(obj):
 
 
 def msgpack_decoder(serialized_obj):
+    """Deserialize structure from msgpack-encoded tuple."""
+
     proto_version, marker, obj_repr = msgpack.unpackb(
             serialized_obj,
             encoding='utf-8')
@@ -61,12 +81,24 @@ def msgpack_decoder(serialized_obj):
 
 
 def encode(obj, encoder=None):
+    """Serialize object.
+
+    :param obj: Chain block, tree node, or bytes
+    :param encoder: Custom serializer
+    """
+
     if encoder is None:
         encoder = msgpack_encoder
     return encoder(obj)
 
 
-def decode(obj, decoder=None):
+def decode(serialized, decoder=None):
+    """Deserialize object.
+
+    :param serialized: Encoded structure
+    :param encoder: Custom de-serializer
+    """
+
     if decoder is None:
         decoder = msgpack_decoder
-    return decoder(obj)
+    return decoder(serialized)

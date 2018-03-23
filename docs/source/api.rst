@@ -15,6 +15,12 @@ Tree
 .. automodule:: hippiepug.tree
    :members:
 
+================
+Basic containers
+================
+
+.. automodule:: hippiehug.struct
+   :members:
 
 =====
 Store
@@ -23,10 +29,9 @@ Store
 .. automodule:: hippiepug.store
    :members:
 
+=============
+Serialization
+=============
 
-=====
-Utils
-=====
-
-.. automodule:: hippiepug.utils
+.. automodule:: hippiepug.pack
    :members:
