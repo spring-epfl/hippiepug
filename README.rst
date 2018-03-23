@@ -33,10 +33,9 @@ Each of the data structures supports logarithmic queries, and logarithmic proofs
 
 with *n* being the size for the map and the set, or the number of blocks in the case of a chain.
 
----------------
 
-Acknowledgement
-===============
+Acks
+----
 
 The library is a reimplementation of G. Danezis's `hippiehug`_.
 
