@@ -17,22 +17,23 @@ Sublinear-traversal blockchains and efficient key-value Merkle trees
 
 .. inclusion-marker-do-not-remove
 
-This library provides implementations of two cryptographiic data structures:
+This library provides implementations of two cryptographic data structures:
+
   * Blockchains with log(n) sublinear traversal, implemented as deterministic hash skipchains
-  * Verifiable unique-resolution dictionary implemented as a Merkle prefix tree
+  * Verifiable unique-resolution dictionary, implemented as a Merkle prefix tree
     
-Both are meant to be used with a content-addressable storag. Each data structures supports logarithmic queries, and logarithmic proofs of inclusion:
+Both are meant to be used with a content-addressable storage. Each data structures supports logarithmic queries, and logarithmic proofs of inclusion:
 
 +-----------------------+--------------------------+----------------------+----------------+---------------------+
 |                       | Retrievals per query     | Inclusion proof size | Append         | Data structure size |
 +=======================+==========================+======================+================+=====================+
 | Hash skipchain        | ~log(n)                  | O(log(n))            | O(1)           | O(n)                |
 +-----------------------+--------------------------+----------------------+----------------+---------------------+
-| Verifiable dictionary | ~log(n)                  | O(log(n))            | Immutable      | O(n)                |
+| Merkle prefix tree    | ~log(n)                  | O(log(n))            | Immutable      | O(n)                |
 +-----------------------+--------------------------+----------------------+----------------+---------------------+
 
 
-with *n* being the size for the dictionary, or the number of blocks in the case of a chain.
+with *n* being the size of the dictionary, or the number of blocks in the case of a chain.
 
 Acks
 ----
