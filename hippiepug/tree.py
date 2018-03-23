@@ -6,80 +6,14 @@ import abc
 import collections
 import os
 
-import msgpack
-
-from .utils import Serializable
 from .store import Sha256DictStore
-
-
-class BaseNode(Serializable):
-    """Merkle tree node.
-
-    :param lookup_prefix:
-    :param payload:
-    :param left_hash:
-    :param right_hash:
-    """
-
-    def __init__(self, lookup_prefix=None, payload_hash=None, left_hash=None, right_hash=None):
-        self._lookup_prefix = lookup_prefix
-        self._payload_hash = payload_hash
-        self._left_hash = left_hash
-        self._right_hash = right_hash
-
-    @property
-    def lookup_prefix(self):
-        return self._lookup_prefix
-
-    @property
-    def payload_hash(self):
-        return self._payload_hash
-
-    @property
-    def left_hash(self):
-        return self._left_hash
-
-    @property
-    def right_hash(self):
-        return self._right_hash
-
-    @property
-    def is_leaf(self):
-        return self.left_hash is None and self.right_hash is None
-
-    def __repr__(self):
-        return ('{class_name}('
-                'lookup_prefix={lookup_prefix}, '
-                'payload_hash={payload_hash}, '
-                'left_hash={left_hash}, '
-                'right_hash={right_hash})').format(
-                        class_name=self.__class__.__name__,
-                        lookup_prefix=repr(self.lookup_prefix),
-                        payload_hash=repr(self.payload_hash),
-                        left_hash=repr(self.left_hash),
-                        right_hash=repr(self.right_hash))
-
-
-class MsgpackNode(BaseNode):
-
-    def serialize(self):
-        """Serialize node, in particular for hashing."""
-        return msgpack.packb(
-                (self.lookup_prefix, self.payload_hash,
-                    self.left_hash, self.right_hash),
-                use_bin_type=True)
-
-    @classmethod
-    def deserialize(cls, serialized_node):
-        """Deserialize node."""
-        unpacked = msgpack.unpackb(serialized_node, raw=False)
-        lookup_prefix, payload_hash, left_hash, right_hash = unpacked
-        return cls(lookup_prefix, payload_hash, left_hash, right_hash)
+from .node import TreeNode, TreeLeaf
+from .pack import encode, decode
 
 
 class Tree(object):
     """
-    View of a committed Merkle tree
+    View of a committed Merkle tree.
 
     :param object_store: Object store
     :param head: The hash of the head block
@@ -101,9 +35,9 @@ class Tree(object):
         serialized_node = self.object_store.get(
                 node_hash, check_integrity=True)
         if serialized_node is not None:
-            node = Node.deserialize(serialized_node)
+            node = decode(serialized_node)
             self.cache[node_hash] = block
-        return raw_node.deserialize()
+            return node
 
     def get_inclusion_evidence(self, lookup_key):
         return None
@@ -138,8 +72,7 @@ class TreeMapBuilder(object):
        * :py:class:`hippiepug.chain.Chain`
     """
 
-    def __init__(self, node_cls, object_store=None):
-        self.node_cls = node_cls
+    def __init__(self, object_store=None):
         if object_store is None:
             object_store = Sha256DictStore()
         self.object_store = object_store
@@ -158,8 +91,9 @@ class TreeMapBuilder(object):
         if len(items) == 1:
             (key, serialized_obj), = items
             value_hash = self.object_store.hash_object(serialized_obj)
-            leaf = self.node_cls(lookup_prefix=key, payload_hash=value_hash)
+            leaf = TreeLeaf(lookup_key=key, payload_hash=value_hash)
             return [leaf]
+
         else:
             middle = len(items) // 2
             pivot_key, pivot_obj = items[middle]
@@ -170,10 +104,19 @@ class TreeMapBuilder(object):
 
             # Compute minimal lookup prefixes
             pivot_keys = [pivot_key]
+            left_child = left_subtree_nodes[0]
+            right_child = right_subtree_nodes[0]
+
+            def get_node_key(node):
+                if isinstance(node, TreeLeaf):
+                    return node.lookup_key
+                elif isinstance(node, TreeNode):
+                    return node.pivot_key
+
             if left_subtree_nodes:
-                pivot_keys.append(left_subtree_nodes[0].lookup_prefix)
+                pivot_keys.append(get_node_key(left_child))
             if right_subtree_nodes:
-                pivot_keys.append(right_subtree_nodes[0].lookup_prefix)
+                pivot_keys.append(get_node_key(right_child))
             common_prefix = os.path.commonprefix(pivot_keys)
             pivot_key = pivot_key[:max(1, len(common_prefix))]
 
@@ -181,12 +124,11 @@ class TreeMapBuilder(object):
             left_hash = None
             right_hash = None
             left_hash=self.object_store.hash_object(
-                left_subtree_nodes[0].serialize())
+                encode(left_subtree_nodes[0]))
             right_hash=self.object_store.hash_object(
-                right_subtree_nodes[0].serialize())
+                encode(right_subtree_nodes[0]))
 
-            pivot_node = self.node_cls(
-                    lookup_prefix=pivot_key,
+            pivot_node = TreeNode(pivot_key=pivot_key,
                     left_hash=left_hash, right_hash=right_hash)
 
             return [pivot_node] + left_subtree_nodes + right_subtree_nodes
@@ -203,7 +145,7 @@ class TreeMapBuilder(object):
 
         # Put intermediate nodes into the store.
         for node in nodes:
-            serialized_node = node.serialize()
+            serialized_node = encode(node)
             self.object_store.add(serialized_node)
 
         # Put items themselves into the store.
@@ -211,4 +153,5 @@ class TreeMapBuilder(object):
             self.object_store.add(serialized_obj)
 
         head_node = nodes[0]
-        head = self.object_store.hash_object(head_node.serialize())
+        head = self.object_store.hash_object(encode(head_node))
+

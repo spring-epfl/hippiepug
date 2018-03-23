@@ -1,7 +1,8 @@
-from hippiepug.chain import MsgpackBlock, Chain
+from hippiepug.block import Block
+from hippiepug.chain import Chain
 
 
-chain = Chain(MsgpackBlock)
+chain = Chain(Block)
 
 block = chain.make_next_block()
 block.payload = 'Hello, world!'

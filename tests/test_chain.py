@@ -1,8 +1,10 @@
 import pytest
 import six
 
-from hippiepug.chain import MsgpackBlock, Chain
+from hippiepug.block import Block
+from hippiepug.chain import Chain
 from hippiepug.store import Sha256DictStore, IntegrityValidationError
+from hippiepug.pack import encode, decode
 
 
 CHAIN_SIZES = [1, 2, 3, 10]
@@ -10,7 +12,7 @@ CHAIN_SIZES = [1, 2, 3, 10]
 
 @pytest.fixture
 def block():
-    return MsgpackBlock(payload='Test payload')
+    return Block(payload='Test payload')
 
 
 @pytest.fixture
@@ -28,7 +30,7 @@ def chain(object_store, block):
 
 @pytest.fixture(params=CHAIN_SIZES)
 def chain_and_hashes(request, chain_factory):
-    chain = chain_factory.make(block_cls=MsgpackBlock)
+    chain = chain_factory.make(block_cls=Block)
     hashes = []
     for i in range(request.param):
         block = chain.make_next_block()
@@ -44,14 +46,14 @@ def test_block_hash_value(chain):
     assert block.hash_value is None
     block.commit()
     assert block.hash_value == chain.object_store.hash_object(
-            block.serialize())
+            encode(block))
 
 
 def test_block_serialization(block):
     """Test if a block serializes fine."""
     a = block
-    serialized = a.serialize()
-    b = block.deserialize(serialized)
+    serialized = encode(a)
+    b = decode(serialized)
     assert a.index == b.index \
         and a.fingers == b.fingers \
         and a.payload == b.payload
@@ -142,8 +144,8 @@ def test_get_block_by_hash_fails_if_hash_wrong(chain_and_hashes):
     chain._cache.clear()
     target_hash = hashes[0]
 
-    substitute_block = MsgpackBlock(payload='Hacked!')
-    chain.object_store._backend[target_hash] = substitute_block.serialize()
+    substitute_block = Block(payload='Hacked!')
+    chain.object_store._backend[target_hash] = encode(substitute_block)
 
     with pytest.raises(IntegrityValidationError):
         chain.get_block_by_hash(target_hash)
@@ -191,16 +193,16 @@ def test_chain_iterator(chain_and_hashes):
 
 def test_chain_evidence(chain_factory, object_store):
     """Check returned evidence."""
-    chain1 = chain_factory.make(block_cls=MsgpackBlock)
+    chain1 = chain_factory.make(block_cls=Block)
     for i in range(10):
         block = chain1.make_next_block(payload='Block %i' % i)
         block.commit()
 
     res, evidence = chain1.get_block_by_index(2, return_evidence=True)
-    serialized_evidence = {block.hash_value: block.serialize()
+    serialized_evidence = {block.hash_value: encode(block)
                            for block in evidence}
 
-    chain2 = chain_factory.make(block_cls=MsgpackBlock)
+    chain2 = chain_factory.make(block_cls=Block)
     chain2.head = chain1.head
     chain2.object_store = object_store.__class__(serialized_evidence)
     assert chain2.get_block_by_index(2).payload == 'Block 2'
