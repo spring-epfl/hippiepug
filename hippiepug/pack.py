@@ -57,7 +57,7 @@ def msgpack_decoder(serialized_obj):
         return TreeLeaf(lookup_key=lookup_key, payload_hash=payload_hash)
 
     else:
-        return obj_repr
+        return obj_repr[0]
 
 
 def encode(obj, encoder=None):

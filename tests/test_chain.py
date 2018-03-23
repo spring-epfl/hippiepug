@@ -13,19 +13,6 @@ CHAIN_SIZES = [1, 2, 3, 10]
 
 
 @pytest.fixture
-def block():
-    return ChainBlock(payload='Test payload')
-
-
-@pytest.fixture
-def chain_factory(object_store, block):
-    class ChainFactory:
-        def make(self):
-            return Chain(object_store)
-    yield ChainFactory()
-
-
-@pytest.fixture
 def chain(object_store):
     return Chain(object_store)
 
@@ -55,16 +42,6 @@ def test_block_hash_value(block_builder):
     assert chain.head == block_hash
 
 
-def test_block_serialization(block):
-    """Test if a block serializes fine."""
-    a = block
-    serialized = encode(a)
-    b = decode(serialized)
-    assert a.index == b.index \
-        and a.fingers == b.fingers \
-        and a.payload == b.payload
-
-
 @pytest.mark.parametrize('chain_size', CHAIN_SIZES)
 def test_builder_commit_blocks(block_builder, chain_size):
     """
@@ -78,6 +55,10 @@ def test_builder_commit_blocks(block_builder, chain_size):
         block = block_builder.commit()
         expected_head = block_builder.chain.object_store.hash_object(
                 encode(block))
+
+
+def test_builder_repr(block_builder):
+    assert 'BlockBuilder' in repr(block_builder)
 
 
 def test_chain_get_block_by_hash_from_cache(chain_and_hashes):
@@ -138,7 +119,6 @@ def test_chain_get_block_by_index_from_cache(chain_and_hashes):
     for i, block_hash in enumerate(hashes):
         a = chain.get_block_by_index(i)
         chain._cache.__getitem__.assert_called_with(block_hash)
-    return block
 
 
 def test_get_block_by_index_from_store(chain_and_hashes):
@@ -173,9 +153,9 @@ def test_chain_iterator(chain_and_hashes):
         assert block_hash == expected_block_hash
 
 
-def test_chain_evidence(chain_factory, object_store):
+def test_chain_evidence(object_store):
     """Check returned evidence."""
-    chain1 = chain_factory.make()
+    chain1 = Chain(object_store)
     for i in range(10):
         block_builder = BlockBuilder(chain1)
         block_builder.payload='Block %i' % i
@@ -191,3 +171,6 @@ def test_chain_evidence(chain_factory, object_store):
     chain2 = Chain(evidence_store, head=chain1.head)
     assert chain2.get_block_by_index(2).payload == 'Block 2'
 
+
+def test_chain_repr(chain):
+    assert 'Chain' in repr(chain)

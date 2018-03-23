@@ -210,9 +210,6 @@ class BlockBuilder(object):
 
         :return: The block that was committed.
         """
-        if self._chain is None:
-            raise ValueError('Chain undefined.')
-
         self.pre_commit()
         current_block = self._block
         self.chain._append(current_block)
@@ -228,3 +225,8 @@ class BlockBuilder(object):
         """
         pass
 
+    def __repr__(self):
+        return ('{self.__class__.__name__}('
+                'chain={self.chain}'
+                'payload=\'{self.payload}\')').format(
+                    self=self)
