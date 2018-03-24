@@ -25,18 +25,20 @@ dev_requires = test_requires + [
 ]
 
 
-here = os.path.abspath(os.path.dirname(__file__))
+description = ('Sublinear-traversal blockchains and efficient key-value '
+               'Merkle trees with a flexible storage backend.')
 
+
+here = os.path.abspath(os.path.dirname(__file__))
 with open(os.path.join(here, 'README.rst')) as f:
         long_description = f.read()
+
 
 
 setup(
     name='hippiepug',
     version=0.1,
-    description=(
-        'Sublinear-traversal blockchains and efficient key-value Merkle trees '
-        'with a flexible storage backend.'),
+    description=description,
     long_description=long_description,
     author='Bogdan Kulynych',
     author_email='hello@bogdankulynych.me',

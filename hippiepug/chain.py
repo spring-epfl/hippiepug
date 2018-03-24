@@ -136,11 +136,6 @@ class BlockBuilder(object):
     is needed, say, if you want to sign the payload before commiting.
 
     :param chain: Chain to which the block should belong.
-    :param payload: Block payload
-    :type payload: Byte array
-    :param index: Sequence index
-    :param fingers: Skip-list fingers (list of back-pointers to
-                     previous blocks)
 
     Set the payload before committing:
 
@@ -159,23 +154,32 @@ class BlockBuilder(object):
 
     @property
     def chain(self):
+        """The associated chain."""
         return self._chain
 
     @property
     def payload(self):
+        """Anticipated block payload."""
         return self._block.payload
 
     @payload.setter
     def payload(self, value):
+        """Set the block payload.
+
+        :param value: Block payload
+        :type value: Byte array
+        """
         self._block.payload = value
 
     @property
     def index(self):
-       return self._block.index
+        """Anticipated index of the block being built."""
+        return self._block.index
 
     @property
     def fingers(self):
-       return self._block.fingers
+        """Anticipated skip-list fingers (back-pointers to previous blocks)."""
+        return self._block.fingers
 
     @staticmethod
     def skipchain_indices(index):

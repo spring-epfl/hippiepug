@@ -32,9 +32,9 @@ Both are meant to be used with a content-addressable storage. Each data structur
 +-----------------------+--------------------------+----------------------+----------------+
 |                       | Retrievals per query     | Inclusion proof size | Append         |
 +=======================+==========================+======================+================+
-| Hash skipchain        | ~log(n)                  | O(log(n))            | O(1)           |
+| Hash skipchain        | ~ log(n)                 | ~ log(n)             | O(1)           |
 +-----------------------+--------------------------+----------------------+----------------+
-| Merkle key-value tree | ~log(n)                  | O(log(n))            | Immutable      |
+| Merkle key-value tree | ~ log(n)                 | ~ 2log(n)            | Immutable      |
 +-----------------------+--------------------------+----------------------+----------------+
 
 with *n* being the size of the dictionary, or the number of blocks in the case of a chain.

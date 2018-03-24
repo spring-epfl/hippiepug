@@ -2,8 +2,6 @@
 hippiepug
 ---------
 
-*Efficient Merkle trees and log(n) hash chains*
-
 .. include::  ../../README.rst
   :start-after: inclusion-marker-do-not-remove
 
@@ -16,7 +14,7 @@ Contents
    api
 
 Indices and tables
-==================
+~~~~~~~~~~~~~~~~~~
 
 * :ref:`genindex`
 * :ref:`modindex`
