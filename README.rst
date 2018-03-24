@@ -1,5 +1,5 @@
 .. image:: hippiepug.jpg
-   :width: 500px
+   :width: 100px
    :alt: Hippiepug
 
 hippiepug
