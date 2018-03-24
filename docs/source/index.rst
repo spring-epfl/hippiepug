@@ -2,9 +2,9 @@
   :width: 150px
   :align: right
 
----------
+=========
 hippiepug
----------
+=========
 
 .. include::  ../../README.rst
   :start-after: inclusion-marker-do-not-remove
@@ -15,7 +15,9 @@ Contents
 .. toctree::
    :maxdepth: 2
 
+   intro
    api
+   license
 
 Indices and tables
 ~~~~~~~~~~~~~~~~~~
