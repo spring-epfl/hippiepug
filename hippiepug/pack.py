@@ -16,6 +16,9 @@ Serializers for chain blocks and tree nodes.
 
 from warnings import warn
 
+from defaultcontext import with_default_context
+
+import attr
 import msgpack
 
 from .struct import ChainBlock, TreeNode, TreeLeaf
@@ -83,6 +86,33 @@ def msgpack_decoder(serialized_obj):
         return obj_repr[0]
 
 
+DEFAULT_ENCODER = msgpack_encoder
+DEFAULT_DECODER = msgpack_decoder
+
+
+@with_default_context(use_empty_init=True)
+@attr.s
+class EncodingParams(object):
+    """Thread-local container for default encoder and decoder funcs.
+
+    :param encoder: Default encoder
+    :param decoder: Default decoder
+
+    This is how you can override the defaults using this class:
+
+    >>> my_params = EncodingParams()
+    >>> my_params.encoder = lambda obj: b'encoded!'
+    >>> my_params.decoder = lambda encoded: b'decoded!'
+    >>> EncodingParams.set_default(my_params)
+    >>> encode(b'dummy') == 'encoded!'
+    True
+    >>> decode(b'encoded!') == 'decoded!'
+    True
+    """
+    encoder = attr.ib(default=attr.Factory(lambda: msgpack_encoder))
+    decoder = attr.ib(default=attr.Factory(lambda: msgpack_decoder))
+
+
 def encode(obj, encoder=None):
     """Serialize object.
 
@@ -91,7 +121,7 @@ def encode(obj, encoder=None):
     """
 
     if encoder is None:
-        encoder = msgpack_encoder
+        encoder = EncodingParams.get_default().encoder
     return encoder(obj)
 
 
@@ -103,5 +133,5 @@ def decode(serialized, decoder=None):
     """
 
     if decoder is None:
-        decoder = msgpack_decoder
+        decoder = EncodingParams.get_default().decoder
     return decoder(serialized)

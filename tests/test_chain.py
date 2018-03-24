@@ -1,6 +1,5 @@
 import pytest
 import math
-import six
 
 from mock import MagicMock
 

@@ -4,21 +4,23 @@ import os
 from setuptools import setup
 from hippiepug.meta import __author__, __version__, description
 
+
 install_requires = [
-    'six>=1.11.0',
+    'attrs>=17.4.0',
     'msgpack>=0.5.6',
-    'attrs>=17.4.0'
+    'defaultcontext>=1.0.3',
 ]
+
 setup_requires = [
     'pytest-runner',
 ]
 
-
 test_requires = [
     'pytest',
     'mock',
-    'pytest-lazy-fixture'
+    'pytest-lazy-fixture',
 ]
+
 dev_requires = test_requires + [
     'sphinx',
     'sphinx_rtd_theme'
