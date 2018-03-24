@@ -1,7 +1,7 @@
 hippiepug
 =========
 
-Sublinear-traversal blockchains and efficient key-value Merkle trees 
+Sublinear-traversal blockchains and efficient key-value Merkle trees
 
 :Documentation:
     .. image:: https://readthedocs.org/projects/hippiepug/badge/?version=latest
@@ -18,6 +18,10 @@ Sublinear-traversal blockchains and efficient key-value Merkle trees
        :target: https://coveralls.io/github/bogdan-kulynych/hippiepug
        :alt: Test coverage
 
+.. image:: hippiepug.jpg
+   :alt: Hippiepug
+   :align: right
+
 --------------
 
 .. inclusion-marker-do-not-remove
@@ -26,7 +30,7 @@ This library provides implementations of two cryptographic data structures:
 
 - Blockchains with log(n) sublinear traversal, implemented as deterministic hash skipchains
 - Verifiable unique-resolution dictionary, implemented as a key-value Merkle tree
-    
+
 Both are meant to be used with a content-addressable storage. Each data structures supports logarithmic queries, and logarithmic proofs of inclusion:
 
 +-----------------------+--------------------------+----------------------+----------------+
