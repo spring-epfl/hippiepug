@@ -20,7 +20,6 @@ Sublinear-traversal blockchains and efficient key-value Merkle trees
 
 .. image:: hippiepug.jpg
    :alt: Hippiepug
-   :align: right
 
 --------------
 
