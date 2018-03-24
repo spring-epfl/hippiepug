@@ -26,6 +26,15 @@ def populated_tree(object_store):
     return builder.commit()
 
 
+def test_builder_fails_when_no_items(object_store):
+    tree_builder = TreeBuilder(object_store)
+    with pytest.raises(ValueError):
+        tree_builder.commit()
+
+    tree_builder['a'] = b'b'
+    tree_builder.commit()
+
+
 def test_builder(populated_tree):
     """Check if the tree structure is as expected."""
     tree = populated_tree

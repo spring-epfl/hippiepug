@@ -92,8 +92,8 @@ class BaseDictStore(BaseStore):
         return obj_hash
 
     def __repr__(self):
-        return '{self.__class__.__name__}({self._backend})'.format(
-            self=self)
+        return ('{self.__class__.__name__}('
+                '{self._backend})').format(self=self)  # pragma: no cover
 
 
 class Sha256DictStore(BaseDictStore):
