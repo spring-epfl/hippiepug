@@ -1,3 +1,7 @@
+.. image:: hippiepug.jpg
+   :width: 500px
+   :alt: Hippiepug
+
 hippiepug
 =========
 
@@ -17,9 +21,6 @@ Sublinear-traversal blockchains and efficient key-value Merkle trees
     .. image:: https://coveralls.io/repos/github/bogdan-kulynych/hippiepug/badge.svg
        :target: https://coveralls.io/github/bogdan-kulynych/hippiepug
        :alt: Test coverage
-
-.. image:: hippiepug.jpg
-   :alt: Hippiepug
 
 --------------
 
