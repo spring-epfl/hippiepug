@@ -1,3 +1,7 @@
+.. image:: _static/hippiepug.svg
+  :width: 150px
+  :align: right
+
 ---------
 hippiepug
 ---------

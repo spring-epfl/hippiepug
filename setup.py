@@ -2,7 +2,7 @@
 import os
 
 from setuptools import setup
-
+from hippiepug.meta import __author__, __version__, description
 
 install_requires = [
     'six>=1.11.0',
@@ -25,22 +25,17 @@ dev_requires = test_requires + [
 ]
 
 
-description = ('Sublinear-traversal blockchains and efficient key-value '
-               'Merkle trees with a flexible storage backend.')
-
-
 here = os.path.abspath(os.path.dirname(__file__))
 with open(os.path.join(here, 'README.rst')) as f:
         long_description = f.read()
 
 
-
 setup(
     name='hippiepug',
-    version=0.1,
+    version=__version__,
     description=description,
     long_description=long_description,
-    author='Bogdan Kulynych',
+    author=__author__,
     author_email='hello@bogdankulynych.me',
     packages=['hippiepug'],
     license="AGPL",
