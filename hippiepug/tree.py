@@ -34,8 +34,16 @@ class Tree(object):
         self.root = root
         self._cache = cache or {}
 
-    def get_node_by_hash(self, node_hash):
-        """Retrieve node or object by its hash."""
+    def _get_node_by_hash(self, node_hash):
+        """Unsafely retrieve node by its hash.
+
+        .. warning::
+            This function does not check if the retrieved node
+            belongs to this chain.
+
+        :raises: ``ValueError`` if retrieved object is not
+                 a tree node.
+        """
         if node_hash in self._cache:
             return self._cache[node_hash]
 
@@ -43,6 +51,9 @@ class Tree(object):
                 node_hash, check_integrity=True)
         if serialized_node is not None:
             node = decode(serialized_node)
+            if not isinstance(node, TreeLeaf) and not isinstance(
+                    node, TreeNode):
+                raise ValueError('Object with this hash is not a tree node.')
             self._cache[node_hash] = node
             return node
 
@@ -63,9 +74,9 @@ class Tree(object):
 
             if isinstance(current_node, TreeNode):
                 if current_node.left_hash:
-                    left_child = self.get_node_by_hash(current_node.left_hash)
+                    left_child = self._get_node_by_hash(current_node.left_hash)
                 if current_node.right_hash:
-                    right_child = self.get_node_by_hash(current_node.right_hash)
+                    right_child = self._get_node_by_hash(current_node.right_hash)
 
             if lookup_key < current_node.pivot_prefix:
                 current_node = left_child
@@ -79,6 +90,26 @@ class Tree(object):
         path_nodes.append(current_node)
         return path_nodes, closure_nodes
 
+    def get_value_by_lookup_key(self, lookup_key, return_proof=False):
+        """Retrieve value by its lookup key.
+
+        :param lookup_key: Lookup key
+        :param return_proof: Whether to return inclusion proof
+        :returns: Found value or None, or (value, proof) tuple if
+                  return_proof is True.
+        """
+        path, closure = self.get_inclusion_proof(lookup_key)
+        result = None
+        if path and path[-1].lookup_key == lookup_key:
+            serialized_payload = self.object_store.get(
+                    path[-1].payload_hash)
+            result = serialized_payload
+
+        if return_proof:
+            return result, (path, closure)
+        else:
+            return result
+
     def __contains__(self, lookup_key):
         """Check if lookup key is in the tree."""
         try:
@@ -88,21 +119,17 @@ class Tree(object):
             return False
 
     def __getitem__(self, lookup_key):
-        """Retrieve the value for a given lookup key."""
-        path, closure = self.get_inclusion_proof(lookup_key)
-        if path:
-            leaf_node = path[-1]
-            if leaf_node.lookup_key == lookup_key:
-                serialized_payload = self.object_store.get(
-                        leaf_node.payload_hash)
-                return serialized_payload
-
-        raise KeyError('The item with given lookup key was not found.')
+        """Retrieve value by its lookup key."""
+        value = self.get_value_by_lookup_key(lookup_key, return_proof=False)
+        if value is None:
+            raise KeyError('The item with given lookup key was not found.')
+        else:
+            return value
 
     @property
     def root_node(self):
         """The root node."""
-        return self.get_node_by_hash(self.root)
+        return self._get_node_by_hash(self.root)
 
     def __repr__(self):
         return ('Tree('

@@ -55,9 +55,13 @@ def msgpack_encoder(obj):
 def msgpack_decoder(serialized_obj):
     """Deserialize structure from msgpack-encoded tuple."""
 
-    proto_version, marker, obj_repr = msgpack.unpackb(
-            serialized_obj,
-            encoding='utf-8')
+    try:
+        proto_version, marker, obj_repr = msgpack.unpackb(
+                serialized_obj,
+                encoding='utf-8')
+    except Exception as e:
+        raise ValueError('Object could not be decoded: %s' % e)
+
     if proto_version != PROTO_VERSION:
         warn('Serialization protocol version mismatch. '
              'Expected: %s, got: %s' % (PROTO_VERSION, proto_version))

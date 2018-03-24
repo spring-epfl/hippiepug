@@ -33,7 +33,7 @@ class Chain(object):
 
         def __next__(self):
             if self.current_index >= 0:
-                block = self.chain.get_block_by_index(self.current_index)
+                block = self.chain[self.current_index]
                 self.current_index -= 1
                 return block
             else:
@@ -57,16 +57,26 @@ class Chain(object):
     @property
     def head_block(self):
         """The latest block in the chain."""
-        return self.get_block_by_hash(self.head)
+        return self._get_block_by_hash(self.head)
 
-    def get_block_by_hash(self, hash_value):
-        """Retrieve block by its hash."""
+    def _get_block_by_hash(self, hash_value):
+        """Unsafely retrieve block by its hash.
+
+        .. warning::
+            This function does not check if the retrieved block
+            belongs to this chain.
+
+        :raises: ``ValueError`` if retrieved object is not
+                 a :py:class:`struct.ChainBlock`
+        """
         if hash_value in self._cache:
             return self._cache[hash_value]
 
         serialized_block = self.object_store.get(hash_value)
         if serialized_block is not None:
             block = decode(serialized_block)
+            if not isinstance(block, ChainBlock):
+                raise ValueError('Object with this hash is not a chain block.')
             self._cache[hash_value] = block
             return block
 
@@ -81,7 +91,7 @@ class Chain(object):
         :returns: Found block or None, or (block, proof) tuple if
                   return_proof is True.
         :raises: If the index is out of bounds,
-                 raises IndexError.
+                 raises ``IndexError``.
         """
         if self.head is None:
             return None
@@ -105,7 +115,14 @@ class Chain(object):
             # Otherwise, follow the fingers:
             _, hash_value = [(f, h) for (f, h) in current_block.fingers
                       if f >= index][0]
-            current_block = self.get_block_by_hash(hash_value)
+            current_block = self._get_block_by_hash(hash_value)
+
+    def __getitem__(self, index):
+        """Get block by index."""
+        block = self.get_block_by_index(index, return_proof=False)
+        if block is None:
+            raise IndexError('Block not found.')
+        return block
 
     def _append(self, block):
         """Append block to the chain."""
@@ -179,7 +196,7 @@ class BlockBuilder(object):
     @staticmethod
     def skipchain_indices(index):
         """Finger indices for the current index."""
-        return set(index - 1 - ((index - 1) % (2**f)) for f in range(64))
+        return {index - 1 - ((index - 1) % (2**f)) for f in range(64)}
 
     def _make_next_block(self, payload=None):
         """Prepare an empty subsequent block.
@@ -227,6 +244,6 @@ class BlockBuilder(object):
 
     def __repr__(self):
         return ('{self.__class__.__name__}('
-                'chain={self.chain}'
+                'chain={self.chain}, '
                 'payload=\'{self.payload}\')').format(
                     self=self)
