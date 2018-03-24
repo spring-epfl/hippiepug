@@ -34,7 +34,7 @@ Both are meant to be used with a content-addressable storage. Each data structur
 +=======================+==========================+======================+================+
 | Hash skipchain        | ~log(n)                  | O(log(n))            | O(1)           |
 +-----------------------+--------------------------+----------------------+----------------+
-| Merkle prefix tree    | ~log(n)                  | O(log(n))            | Immutable      |
+| Merkle key-value tree | ~log(n)                  | O(log(n))            | Immutable      |
 +-----------------------+--------------------------+----------------------+----------------+
 
 with *n* being the size of the dictionary, or the number of blocks in the case of a chain.
