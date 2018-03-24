@@ -83,28 +83,43 @@ class Tree(object):
 
     def __contains__(self, lookup_key):
         """Check if lookup key is in the tree."""
+        try:
+            self.__getitem__(lookup_key)
+            return True
+        except KeyError:
+            return False
+
+    def __getitem__(self, lookup_key):
+        """Retrieve the value for a given lookup key."""
         path, closure = self.get_inclusion_proof(lookup_key)
         if path:
             leaf_node = path[-1]
-            return leaf_node.lookup_key == lookup_key
-        return False
+            if leaf_node.lookup_key == lookup_key:
+                serialized_payload = self.object_store.get(
+                        leaf_node.payload_hash)
+                return serialized_payload
 
-    def __getitem__(self, item):
-        """Retrieve the value for a given lookup key."""
-        path, closure = self.get_inclusion_proof(lookup_key)
+        raise KeyError('The item with given lookup key was not found.')
 
     @property
     def root_node(self):
         """The root node."""
         return self.get_node_by_hash(self.root)
 
+    def __repr__(self):
+        return ('Tree('
+                'object_store={self.object_store}, '
+                'root=\'{self.root}\')').format(
+                    self=self)
+
 
 class TreeBuilder(object):
     """Builder for a key-value Merkle tree.
 
     :param object_store: Object store
+    :param items: Dictionary of items to be committed to a tree.
 
-    You can add items for committing using a dict-like interface:
+    You can add items using a dict-like interface:
 
     >>> from .store import Sha256DictStore
     >>> store = Sha256DictStore()
@@ -112,7 +127,8 @@ class TreeBuilder(object):
     >>> builder['foo'] = b'bar'
     >>> builder['baz'] = b'zez'
     >>> tree = builder.commit()
-    >>> assert 'foo' in tree
+    >>> 'foo' in tree
+    True
     """
 
     def __init__(self, object_store):
@@ -122,9 +138,6 @@ class TreeBuilder(object):
     def __setitem__(self, lookup_key, value):
         """Add item for committing to the tree."""
         self.items[lookup_key] = value
-
-    def __getitem__(self, lookup_key):
-        return self.items(lookup_key)
 
     def _make_subtree(self, items):
         """Build a tree from sorted items.
@@ -200,3 +213,8 @@ class TreeBuilder(object):
         root = self.object_store.hash_object(encode(root_node))
         return Tree(self.object_store, root)
 
+    def __repr__(self):
+        return ('TreeBuilder('
+                'object_store={self.object_store}, '
+                'items={self.items})').format(
+                    self=self)

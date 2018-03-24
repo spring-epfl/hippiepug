@@ -122,7 +122,7 @@ class Chain(object):
         return Chain.ChainIterator(self.head_block.index, self)
 
     def __repr__(self):
-        return ('{self.__class__.__name__}('
+        return ('Chain('
                 'object_store={self.object_store}, '
                 'head=\'{self.head}\')').format(
                     self=self)
@@ -150,7 +150,8 @@ class BlockBuilder(object):
     >>> builder = BlockBuilder(chain)
     >>> builder.payload = b'Hello, world!'
     >>> block = builder.commit()
-    >>> assert block == chain.head_block
+    >>> block == chain.head_block
+    True
     """
     def __init__(self, chain):
         self._chain = chain

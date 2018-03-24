@@ -48,6 +48,11 @@ def test_builder(populated_tree):
     assert z_leaf.lookup_key == 'Z'
 
 
+def test_builder_repr(object_store):
+    builder = TreeBuilder(object_store)
+    assert 'TreeBuilder' in repr(builder)
+
+
 def test_tree_query_by_hash_from_cache(populated_tree):
     """Check if can retrieve a node by hash from cache."""
     populated_tree._cache = MagicMock()
@@ -107,3 +112,7 @@ def test_tree_contains(populated_tree):
     assert 'ZZZ' in populated_tree
     assert 'Z' in populated_tree
     assert 'ZZ' not in populated_tree
+
+
+def test_tree_repr(populated_tree):
+    assert 'Tree' in repr(populated_tree)
