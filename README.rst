@@ -13,8 +13,10 @@ Sublinear-traversal blockchains and efficient key-value Merkle trees
    :target: https://coveralls.io/github/bogdan-kulynych/hippiepug
    :alt: Test coverage
 
-See `documentation`
-<https://hippiepug.readthedocs.io/>_.
+
+
+See `documentation
+<https://hippiepug.readthedocs.io/>`_.
 
 --------------
 
