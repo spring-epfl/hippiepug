@@ -15,7 +15,7 @@ class BaseStore(object):
 
         :param obj: Object, serialized to bytes
         """
-        pass
+        pass  # pragma: no cover
 
     @abc.abstractmethod
     def __contains__(self, obj_hash):
@@ -23,7 +23,7 @@ class BaseStore(object):
 
         :param obj_hash: ASCII hash
         """
-        pass
+        pass  # pragma: no cover
 
     @abc.abstractmethod
     def get(self, obj_hash, check_integrity=True):
@@ -32,7 +32,7 @@ class BaseStore(object):
         :param obj_hash: ASCII hash
         :param check_integrity: Whether to check the hash upon retrieval
         """
-        pass
+        pass  # pragma: no cover
 
     @abc.abstractmethod
     def add(self, serialized_obj):
@@ -42,7 +42,7 @@ class BaseStore(object):
         :param serialized_obj: Object, serialized to bytes
         :return: Hash of the object.
         """
-        pass
+        pass  # pragma: no cover
 
 
 class IntegrityValidationError(Exception):
