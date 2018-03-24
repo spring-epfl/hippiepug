@@ -5,7 +5,7 @@ from mock import MagicMock
 
 from hippiepug.struct import ChainBlock
 from hippiepug.chain import Chain, BlockBuilder
-from hippiepug.store import Sha256DictStore, IntegrityValidationError
+from hippiepug.store import IntegrityValidationError
 from hippiepug.pack import encode, decode
 
 

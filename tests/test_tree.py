@@ -5,9 +5,7 @@ import pytest
 
 from mock import MagicMock
 
-from hippiepug.struct import TreeNode, TreeLeaf
-from hippiepug.tree import TreeBuilder
-from hippiepug.pack import encode, decode
+from hippiepug.tree import TreeBuilder, Tree
 
 # Test tree:
 #     /ZZZ-|

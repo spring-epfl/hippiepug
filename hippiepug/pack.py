@@ -14,7 +14,6 @@ Serializers for chain blocks and tree nodes.
     it's the serialized versions of nodes and blocks that are hashed.
 """
 
-from enum import Enum
 from warnings import warn
 
 import msgpack

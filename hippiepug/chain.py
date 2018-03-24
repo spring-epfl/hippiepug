@@ -2,11 +2,6 @@
 Tools for building and interpreting hash skipchains.
 """
 
-import abc
-import collections
-
-import msgpack
-
 from .struct import ChainBlock
 from .pack import encode, decode
 

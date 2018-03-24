@@ -2,8 +2,6 @@
 Tools for building and interpreting key-value Merkle trees.
 """
 
-import abc
-import collections
 import os
 
 from .struct import TreeNode, TreeLeaf
