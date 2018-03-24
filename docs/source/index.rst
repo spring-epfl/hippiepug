@@ -6,6 +6,8 @@
 hippiepug
 =========
 
+*Sublinear-traversal blockchains and efficient key-value Merkle trees*
+
 .. include::  ../../README.rst
   :start-after: inclusion-marker-do-not-remove
 
