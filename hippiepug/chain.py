@@ -61,10 +61,7 @@ class Chain(object):
         return self.get_block_by_hash(self.head)
 
     def get_block_by_hash(self, hash_value):
-        """Retrieve block by its hash.
-
-        :param hash_value: ASCII hash of the block
-        """
+        """Retrieve block by its hash."""
         if hash_value in self._cache:
             return self._cache[hash_value]
 
@@ -142,9 +139,9 @@ class BlockBuilder(object):
     :param fingers: Skip-list fingers (list of back-pointers to
                      previous blocks)
     """
-    def __init__(self, chain, payload=None):
+    def __init__(self, chain):
         self._chain = chain
-        self._block = self._make_next_block(payload=payload)
+        self._block = self._make_next_block()
 
     @property
     def chain(self):
