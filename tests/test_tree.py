@@ -6,6 +6,8 @@ import pytest
 from mock import MagicMock
 
 from hippiepug.tree import TreeBuilder, Tree
+from hippiepug.pack import encode
+
 
 # Test tree:
 #     /ZZZ-|
@@ -65,7 +67,8 @@ def test_tree_inclusion_proof(populated_tree):
     """Check tree (non-)inclusion proof."""
 
     # Inclusion in the right subtree.
-    path, closure = populated_tree.get_inclusion_proof('Z')
+    _, (path, closure) = populated_tree.get_value_by_lookup_key(
+            'Z', return_proof=True)
     assert len(path) == 3
     assert path[0].pivot_prefix == 'Z'
     assert path[1].pivot_prefix == 'ZZ'
@@ -119,6 +122,6 @@ def test_tree_get_by_lookup_key(populated_tree):
 
 def test_tree_get_node_by_hash_fails_if_not_node(populated_tree):
     """Check that exception is raised if the object is not a node."""
-    extra_obj_hash = populated_tree.object_store.add(b'extra')
+    extra_obj_hash = populated_tree.object_store.add(encode(b'extra'))
     with pytest.raises(ValueError):
         populated_tree._get_node_by_hash(extra_obj_hash)

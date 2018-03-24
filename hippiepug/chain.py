@@ -134,7 +134,7 @@ class Chain(object):
         return Chain.ChainIterator(self.head_block.index, self)
 
     def __repr__(self):
-        return ('Chain('
+        return ('Chain('  # pragma: no cover
                 'object_store={self.object_store}, '
                 'head=\'{self.head}\')').format(
                     self=self)
@@ -243,7 +243,7 @@ class BlockBuilder(object):
         pass
 
     def __repr__(self):
-        return ('{self.__class__.__name__}('
+        return ('{self.__class__.__name__}('  # pragma: no cover
                 'chain={self.chain}, '
                 'payload=\'{self.payload}\')').format(
                     self=self)

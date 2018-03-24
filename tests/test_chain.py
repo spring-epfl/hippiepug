@@ -43,6 +43,12 @@ def test_block_hash_value(block_builder):
     assert chain.head == block_hash
 
 
+def test_builder_sets_payload(block_builder):
+    """Check that the block builder can set the payload."""
+    block_builder.payload = 'Hello, world!'
+    assert block_builder.payload == 'Hello, world!'
+
+
 def test_builder_skipchain_fingers(chain_and_hashes):
     """Check that skipchain fingers are correct."""
     chain, hashes = chain_and_hashes
@@ -63,10 +69,26 @@ def test_builder_commit_blocks(block_builder, chain_size):
     expected_head = None
     for i in range(chain_size):
         assert block_builder.chain.head == expected_head
+
         block_builder.payload = 'Block {}'.format(i)
+        expected_fingers = block_builder.fingers
+        expected_index = block_builder.index
         block = block_builder.commit()
+
+        # Committed block fields are as set by the builder.
+        assert block.payload == 'Block {}'.format(i)
+        assert block.index == expected_index
+        assert block.fingers == expected_fingers
+
+        # After committing, attribues of the block builder change.
+        assert block_builder.payload is None
+        assert block_builder.index == block.index + 1
+        assert block_builder.fingers != block.fingers
+
         expected_head = block_builder.chain.object_store.hash_object(
                 encode(block))
+
+
 
 
 def test_empty_chain(object_store):
@@ -74,6 +96,8 @@ def test_empty_chain(object_store):
     chain = Chain(object_store)
     assert chain.head is None
     assert chain.get_block_by_index(0) is None
+    with pytest.raises(IndexError):
+        chain[0]
 
 
 def test_chain_get_block_by_hash_from_cache(chain_and_hashes):
@@ -113,7 +137,7 @@ def test_chain_get_block_by_hash_fails_if_hash_wrong(chain_and_hashes):
 def test_chain_get_block_by_hash_fails_if_not_block(chain_and_hashes):
     """Check that exception is raised if the hash is incorrect."""
     chain, hashes = chain_and_hashes
-    extra_obj_hash = chain.object_store.add(b'extra')
+    extra_obj_hash = chain.object_store.add(encode(b'extra'))
     with pytest.raises(ValueError):
         chain._get_block_by_hash(extra_obj_hash)
 

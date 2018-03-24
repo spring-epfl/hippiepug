@@ -132,7 +132,7 @@ class Tree(object):
         return self._get_node_by_hash(self.root)
 
     def __repr__(self):
-        return ('Tree('
+        return ('Tree('  # pragma: no cover
                 'object_store={self.object_store}, '
                 'root=\'{self.root}\')').format(
                     self=self)
@@ -239,7 +239,7 @@ class TreeBuilder(object):
         return Tree(self.object_store, root)
 
     def __repr__(self):
-        return ('TreeBuilder('
+        return ('TreeBuilder('  # pragma: no cover
                 'object_store={self.object_store}, '
                 'items={self.items})').format(
                     self=self)
