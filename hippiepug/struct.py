@@ -23,12 +23,12 @@ class ChainBlock(object):
 class TreeNode(object):
     """Merkle tree intermediate node.
 
-    :param pivot_key: Pivot key for the subtree
+    :param pivot_prefix: Pivot key for the subtree
     :param left_hash: Hash of the left child
     :param right_hash: Hash of the right child
     """
 
-    pivot_key = attr.ib()
+    pivot_prefix = attr.ib()
     left_hash = attr.ib(default=None)
     right_hash = attr.ib(default=None)
 

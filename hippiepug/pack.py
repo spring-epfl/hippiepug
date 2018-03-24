@@ -39,7 +39,7 @@ def msgpack_encoder(obj):
 
     elif isinstance(obj, TreeNode):
         marker = TREE_NODE_MARKER
-        obj_repr = (obj.pivot_key, obj.left_hash, obj.right_hash)
+        obj_repr = (obj.pivot_prefix, obj.left_hash, obj.right_hash)
 
     elif isinstance(obj, TreeLeaf):
         marker = TREE_LEAF_MARKER
@@ -68,8 +68,8 @@ def msgpack_decoder(serialized_obj):
         return ChainBlock(payload=payload, index=index, fingers=fingers)
 
     elif marker == TREE_NODE_MARKER:
-        pivot_key, left_hash, right_hash = obj_repr
-        return TreeNode(pivot_key=pivot_key, left_hash=left_hash,
+        pivot_prefix, left_hash, right_hash = obj_repr
+        return TreeNode(pivot_prefix=pivot_prefix, left_hash=left_hash,
                         right_hash=right_hash)
 
     elif marker == TREE_LEAF_MARKER:

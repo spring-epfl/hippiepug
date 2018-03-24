@@ -16,7 +16,7 @@ def block():
 
 @pytest.fixture
 def node():
-    return TreeNode(pivot_key='test')
+    return TreeNode(pivot_prefix='test')
 
 
 @pytest.fixture

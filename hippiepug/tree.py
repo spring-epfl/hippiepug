@@ -69,7 +69,7 @@ class Tree(object):
                 if current_node.right_hash:
                     right_child = self.get_node_by_hash(current_node.right_hash)
 
-            if lookup_key < current_node.pivot_key:
+            if lookup_key < current_node.pivot_prefix:
                 current_node = left_child
                 if right_child is not None:
                     closure_nodes.append(right_child)
@@ -143,7 +143,7 @@ class TreeBuilder(object):
 
         else:
             middle = len(items) // 2
-            pivot_key, pivot_obj = items[middle]
+            pivot_prefix, pivot_obj = items[middle]
             left_partition = items[:middle]
             # NOTE: The right partition includes the pivot node
             right_partition = items[middle:]
@@ -151,7 +151,7 @@ class TreeBuilder(object):
             right_subtree_nodes = self._make_subtree(right_partition)
 
             # Compute minimal lookup prefixes
-            pivot_keys = [pivot_key]
+            pivot_prefixes = [pivot_prefix]
             left_child = left_subtree_nodes[0]
             right_child = right_subtree_nodes[0]
 
@@ -159,14 +159,14 @@ class TreeBuilder(object):
                 if isinstance(node, TreeLeaf):
                     return node.lookup_key
                 elif isinstance(node, TreeNode):
-                    return node.pivot_key
+                    return node.pivot_prefix
 
             if left_subtree_nodes:
-                pivot_keys.append(get_node_key(left_child))
+                pivot_prefixes.append(get_node_key(left_child))
             if right_subtree_nodes:
-                pivot_keys.append(get_node_key(right_child))
-            common_prefix = os.path.commonprefix(pivot_keys)
-            pivot_key = pivot_key[:max(1, len(common_prefix) + 1)]
+                pivot_prefixes.append(get_node_key(right_child))
+            common_prefix = os.path.commonprefix(pivot_prefixes)
+            pivot_prefix = pivot_prefix[:max(1, len(common_prefix) + 1)]
 
             # Compute hashes of direct children.
             left_hash = None
@@ -176,7 +176,7 @@ class TreeBuilder(object):
             right_hash=self.object_store.hash_object(
                 encode(right_subtree_nodes[0]))
 
-            pivot_node = TreeNode(pivot_key=pivot_key,
+            pivot_node = TreeNode(pivot_prefix=pivot_prefix,
                     left_hash=left_hash, right_hash=right_hash)
 
             return [pivot_node] + left_subtree_nodes + right_subtree_nodes

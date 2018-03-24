@@ -29,7 +29,7 @@ def populated_tree(object_store):
 def test_builder(populated_tree):
     """Check if the tree structure is as expected."""
     tree = populated_tree
-    assert tree.root_node.pivot_key == 'Z'
+    assert tree.root_node.pivot_prefix == 'Z'
 
     ac_node = tree.get_node_by_hash(tree.root_node.left_hash)
     ab_leaf = tree.get_node_by_hash(ac_node.left_hash)
@@ -39,11 +39,11 @@ def test_builder(populated_tree):
     zzz_leaf = tree.get_node_by_hash(zz_node.right_hash)
     z_leaf = tree.get_node_by_hash(zz_node.left_hash)
 
-    assert ac_node.pivot_key == 'AC'
+    assert ac_node.pivot_prefix == 'AC'
     assert ab_leaf.lookup_key == 'AB'
     assert ac_leaf.lookup_key == 'AC'
 
-    assert zz_node.pivot_key == 'ZZ'
+    assert zz_node.pivot_prefix == 'ZZ'
     assert zzz_leaf.lookup_key == 'ZZZ'
     assert z_leaf.lookup_key == 'Z'
 
@@ -60,7 +60,7 @@ def test_tree_query_by_hash_from_cache(populated_tree):
 def test_tree_query_by_hash_from_store(populated_tree):
     """Check if can retrieve a node by hash from store."""
     expected_node = populated_tree.get_node_by_hash(populated_tree.root)
-    assert expected_node.pivot_key == 'Z'
+    assert expected_node.pivot_prefix == 'Z'
 
 
 def test_tree_inclusion_proof(populated_tree):
@@ -69,34 +69,34 @@ def test_tree_inclusion_proof(populated_tree):
     # Inclusion in the right subtree.
     path, closure = populated_tree.get_inclusion_proof('Z')
     assert len(path) == 3
-    assert path[0].pivot_key == 'Z'
-    assert path[1].pivot_key == 'ZZ'
+    assert path[0].pivot_prefix == 'Z'
+    assert path[1].pivot_prefix == 'ZZ'
     assert path[2].lookup_key == 'Z'
 
     assert len(closure) == 2
-    assert closure[0].pivot_key == 'AC'
+    assert closure[0].pivot_prefix == 'AC'
     assert closure[1].lookup_key == 'ZZZ'
 
     # Inclusion in the left subtree.
     path, closure = populated_tree.get_inclusion_proof('AC')
     assert len(path) == 3
-    assert path[0].pivot_key == 'Z'
-    assert path[1].pivot_key == 'AC'
+    assert path[0].pivot_prefix == 'Z'
+    assert path[1].pivot_prefix == 'AC'
     assert path[2].lookup_key == 'AC'
 
     assert len(closure) == 2
-    assert closure[0].pivot_key == 'ZZ'
+    assert closure[0].pivot_prefix == 'ZZ'
     assert closure[1].lookup_key == 'AB'
 
     # Non-inclusion.
     path, closure = populated_tree.get_inclusion_proof('ZZ')
     assert len(path) == 3
-    assert path[0].pivot_key == 'Z'
-    assert path[1].pivot_key == 'ZZ'
+    assert path[0].pivot_prefix == 'Z'
+    assert path[1].pivot_prefix == 'ZZ'
     assert path[2].lookup_key == 'ZZZ'
 
     assert len(closure) == 2
-    assert closure[0].pivot_key == 'AC'
+    assert closure[0].pivot_prefix == 'AC'
     assert closure[1].lookup_key == 'Z'
 
 
