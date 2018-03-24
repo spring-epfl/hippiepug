@@ -63,11 +63,11 @@ def test_tree_query_by_hash_from_store(populated_tree):
     assert expected_node.pivot_key == 'Z'
 
 
-def test_tree_inclusion_evidence(populated_tree):
-    """Check tree (non-)inclusion evidence."""
+def test_tree_inclusion_proof(populated_tree):
+    """Check tree (non-)inclusion proof."""
 
     # Inclusion in the right subtree.
-    path, closure = populated_tree.get_inclusion_evidence('Z')
+    path, closure = populated_tree.get_inclusion_proof('Z')
     assert len(path) == 3
     assert path[0].pivot_key == 'Z'
     assert path[1].pivot_key == 'ZZ'
@@ -78,7 +78,7 @@ def test_tree_inclusion_evidence(populated_tree):
     assert closure[1].lookup_key == 'ZZZ'
 
     # Inclusion in the left subtree.
-    path, closure = populated_tree.get_inclusion_evidence('AC')
+    path, closure = populated_tree.get_inclusion_proof('AC')
     assert len(path) == 3
     assert path[0].pivot_key == 'Z'
     assert path[1].pivot_key == 'AC'
@@ -89,7 +89,7 @@ def test_tree_inclusion_evidence(populated_tree):
     assert closure[1].lookup_key == 'AB'
 
     # Non-inclusion.
-    path, closure = populated_tree.get_inclusion_evidence('ZZ')
+    path, closure = populated_tree.get_inclusion_proof('ZZ')
     assert len(path) == 3
     assert path[0].pivot_key == 'Z'
     assert path[1].pivot_key == 'ZZ'

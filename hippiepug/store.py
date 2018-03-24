@@ -53,6 +53,7 @@ class BaseDictStore(BaseStore):
     """
     Store with dict-like backend.
 
+    :param backend: Backend
     :type backend: dict-like
     """
 
@@ -62,6 +63,7 @@ class BaseDictStore(BaseStore):
         self._backend = backend
 
     def __contains__(self, obj_hash):
+        """Check if obj with a given hash is in the store."""
         return self.get(obj_hash, check_integrity=False) is not None
 
     def get(self, obj_hash, check_integrity=True):
@@ -114,7 +116,7 @@ class Sha256DictStore(BaseDictStore):
     HASH_SIZE_BYTES = 8
 
     def hash_object(cls, serialized_obj):
-        """SHA256 hex hash of a serialized object."""
+        """Return a SHA256 hex-encoded hash of a serialized object."""
         hash_bytes = sha256(serialized_obj).digest()
         hexdigest = hexlify(hash_bytes[:Sha256DictStore.HASH_SIZE_BYTES])
         return hexdigest.decode('utf-8')

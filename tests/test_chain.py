@@ -153,22 +153,22 @@ def test_chain_iterator(chain_and_hashes):
         assert block_hash == expected_block_hash
 
 
-def test_chain_evidence(object_store):
-    """Check returned evidence."""
+def test_chain_proof(object_store):
+    """Check returned inclusion proof."""
     chain1 = Chain(object_store)
     for i in range(10):
         block_builder = BlockBuilder(chain1)
         block_builder.payload='Block %i' % i
         block_builder.commit()
 
-    result, evidence = chain1.get_block_by_index(2, return_evidence=True)
-    evidence_store = chain1.object_store.__class__()
+    result, proof = chain1.get_block_by_index(2, return_proof=True)
+    proof_store = chain1.object_store.__class__()
 
-    for block in evidence:
+    for block in proof:
         serialized_block = encode(block)
-        evidence_store.add(serialized_block)
+        proof_store.add(serialized_block)
 
-    chain2 = Chain(evidence_store, head=chain1.head)
+    chain2 = Chain(proof_store, head=chain1.head)
     assert chain2.get_block_by_index(2).payload == 'Block 2'
 
 

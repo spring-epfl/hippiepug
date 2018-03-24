@@ -1,10 +1,19 @@
 """
-Building blocks.
+Basic building blocks.
 """
+
 import attr
+
 
 @attr.s
 class ChainBlock(object):
+    """Skipchain block.
+
+    :param payload: Block payload
+    :param index: Block index
+    :param fingers: Back-pointers to previous blocks
+    """
+
     payload = attr.ib()
     index = attr.ib(default=0)
     fingers = attr.ib(default=attr.Factory(list))

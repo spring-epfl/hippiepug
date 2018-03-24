@@ -1,5 +1,5 @@
 """
-FIXME: Trees are not finished.
+Tools for building and interpreting key-value Merkle trees.
 """
 
 import abc
@@ -48,8 +48,13 @@ class Tree(object):
             self._cache[node_hash] = node
             return node
 
-    def get_inclusion_evidence(self, lookup_key):
-        """Get (non-)inclusion evidence for a lookup key."""
+    def get_inclusion_proof(self, lookup_key):
+        """Get (non-)inclusion proof for a lookup key.
+
+        :param lookup_key: Lookup key
+        :returns: A tuple with a path to a leaf node, and a list of other
+                  nodes needed to reproduce the tree root.
+        """
         path_nodes = []
         closure_nodes = []
         current_node = self.root_node
@@ -78,7 +83,7 @@ class Tree(object):
 
     def __contains__(self, lookup_key):
         """Check if lookup key is in the tree."""
-        path, closure = self.get_inclusion_evidence(lookup_key)
+        path, closure = self.get_inclusion_proof(lookup_key)
         if path:
             leaf_node = path[-1]
             return leaf_node.lookup_key == lookup_key
@@ -86,11 +91,11 @@ class Tree(object):
 
     def __getitem__(self, item):
         """Retrieve the value for a given lookup key."""
-        path, closure = self.get_inclusion_evidence(lookup_key)
+        path, closure = self.get_inclusion_proof(lookup_key)
 
     @property
     def root_node(self):
-        """Get the root node."""
+        """The root node."""
         return self.get_node_by_hash(self.root)
 
 
@@ -98,6 +103,16 @@ class TreeBuilder(object):
     """Builder for a key-value Merkle tree.
 
     :param object_store: Object store
+
+    You can add items for committing using a dict-like interface:
+
+    >>> from .store import Sha256DictStore
+    >>> store = Sha256DictStore()
+    >>> builder = TreeBuilder(store)
+    >>> builder['foo'] = b'bar'
+    >>> builder['baz'] = b'zez'
+    >>> tree = builder.commit()
+    >>> assert 'foo' in tree
     """
 
     def __init__(self, object_store):

@@ -1,3 +1,7 @@
+"""
+Tools for building and interpreting hash skipchains.
+"""
+
 import abc
 import collections
 
@@ -71,24 +75,23 @@ class Chain(object):
             self._cache[hash_value] = block
             return block
 
-    def get_block_by_index(self, index, return_evidence=False):
+    def get_block_by_index(self, index, return_proof=False):
         """Retrieve a block by its index.
 
-        Optionally returns inclusion evidence, that is a list of intermediate
-        blocks, sufficient to verify the includion of the retrieved block.
-
-        If the block is not found, returns None. If the index is out of bounds,
-        raises IndexError.
+        Optionally returns inclusion proof, that is a list of intermediate
+        blocks, sufficient to verify the inclusion of the retrieved block.
 
         :param index: Block index
-        :param return_evidence: Whether to return evidence
-        :return: Found block or None, or (block, evidence) tuple if
-                 return_evidence is True.
+        :param return_proof: Whether to return inclusion proof
+        :returns: Found block or None, or (block, proof) tuple if
+                  return_proof is True.
+        :raises: If the index is out of bounds,
+                 raises IndexError.
         """
         if self.head is None:
             return None
-        if return_evidence:
-            evidence = []
+        if return_proof:
+            proof = []
         if not (0 <= index <= self.head_block.index):
             raise IndexError(
                 ("Block is beyond this chain head. Must be "
@@ -97,12 +100,12 @@ class Chain(object):
         hash_value = self.head
         current_block = self.head_block
         while current_block is not None:
-            if return_evidence:
-                evidence.append(current_block)
+            if return_proof:
+                proof.append(current_block)
             # When found:
             if index == current_block.index:
-                if return_evidence:
-                    return (current_block, evidence)
+                if return_proof:
+                    return (current_block, proof)
                 return current_block
             # Otherwise, follow the fingers:
             _, hash_value = [(f, h) for (f, h) in current_block.fingers
@@ -128,7 +131,7 @@ class Chain(object):
 class BlockBuilder(object):
     """Customizable builder of skipchain blocks.
 
-    You can override the pre-commit hook (:py:func:`BlockBuilder.pre_commit``)
+    You can override the pre-commit hook (:py:func:`BlockBuilder.pre_commit`)
     to modify the payload before the block is committed to a chain. This
     is needed, say, if you want to sign the payload before commiting.
 
@@ -138,6 +141,16 @@ class BlockBuilder(object):
     :param index: Sequence index
     :param fingers: Skip-list fingers (list of back-pointers to
                      previous blocks)
+
+    Set the payload before committing:
+
+    >>> from .store import Sha256DictStore
+    >>> store = Sha256DictStore()
+    >>> chain = Chain(store)
+    >>> builder = BlockBuilder(chain)
+    >>> builder.payload = b'Hello, world!'
+    >>> block = builder.commit()
+    >>> assert block == chain.head_block
     """
     def __init__(self, chain):
         self._chain = chain

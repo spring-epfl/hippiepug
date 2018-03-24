@@ -7,7 +7,8 @@ hippiepug
 .. include::  ../../README.rst
   :start-after: inclusion-marker-do-not-remove
 
-Contents:
+Contents
+~~~~~~~~
 
 .. toctree::
    :maxdepth: 2

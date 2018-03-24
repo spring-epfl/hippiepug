@@ -11,7 +11,7 @@ Serializers for chain blocks and tree nodes.
     - Your payload
 
     Unless this is done, the integrity of the data structures is screwed, since
-    it's the serialized version of nodes and blocks that are hashed.
+    it's the serialized versions of nodes and blocks that are hashed.
 """
 
 from enum import Enum
