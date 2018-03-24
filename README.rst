@@ -19,8 +19,8 @@ Sublinear-traversal blockchains and efficient key-value Merkle trees
 
 This library provides implementations of two cryptographic data structures:
 
-  * Blockchains with log(n) sublinear traversal, implemented as deterministic hash skipchains
-  * Verifiable unique-resolution dictionary, implemented as a Merkle prefix tree
+  - Blockchains with log(n) sublinear traversal, implemented as deterministic hash skipchains
+  - Verifiable unique-resolution dictionary, implemented as a Merkle prefix tree
     
 Both are meant to be used with a content-addressable storage. Each data structures supports logarithmic queries, and logarithmic proofs of inclusion:
 
