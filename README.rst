@@ -6,6 +6,8 @@
 hippiepug
 =========
 
+Sublinear-traversal blockchains and efficient key-value Merkle trees
+
 .. image:: https://readthedocs.org/projects/hippiepug/badge/?version=latest
    :target: https://hippiepug.readthedocs.io/?badge=latest
    :alt: Documentation Status
@@ -18,11 +20,8 @@ hippiepug
    :target: https://coveralls.io/github/bogdan-kulynych/hippiepug
    :alt: Test coverage
 
-|
-
-Sublinear-traversal blockchains and efficient key-value Merkle trees
-
-Check the documentation at `Readthedocs <https://readthedocs.org/projects/hippiepug/>`_.
+:Documentation:
+    `Readthedocs <https://hippiepug.readthedocs.io/>`_.
 
 --------------
 
