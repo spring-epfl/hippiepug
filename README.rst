@@ -8,24 +8,23 @@ hippiepug
 
 *Sublinear-traversal blockchains and efficient key-value Merkle trees*
 
-:Documentation:
-    .. image:: https://readthedocs.org/projects/hippiepug/badge/?version=latest
-       :target: https://hippiepug.readthedocs.io/?badge=latest
-       :alt: Documentation Status
-    – on `Readthedocs <https://hippiepug.readthedocs.io/>`_.
++-----------------------------------------------------------------------+----------------+---------------+----------+
+| Documentation                                                         | Build status   | Test coverage | Cuteness |
++=======================================================================+================+===============+==========+
+| |docs_status| – on `Readthedocs <https://hippiepug.readthedocs.io/>`_.| |build_status| | |test_cov|    | High     |
++-----------------------------------------------------------------------+----------------+---------------+----------+
 
-:Build status:
-    .. image:: https://travis-ci.org/bogdan-kulynych/hippiepug.svg?branch=master
-       :target: https://travis-ci.org/bogdan-kulynych/hippiepug
-       :alt: Build status
+.. |docs_status| image:: https://readthedocs.org/projects/hippiepug/badge/?version=latest
+   :target: https://hippiepug.readthedocs.io/?badge=latest
+   :alt: Documentation Status
 
-:Test coverage:
-    .. image:: https://coveralls.io/repos/github/bogdan-kulynych/hippiepug/badge.svg
-       :target: https://coveralls.io/github/bogdan-kulynych/hippiepug
-       :alt: Test coverage
+.. |build_status| image:: https://travis-ci.org/bogdan-kulynych/hippiepug.svg?branch=master
+   :target: https://travis-ci.org/bogdan-kulynych/hippiepug
+   :alt: Build status
 
-:Cuteness:
-    High
+.. |test_cov| image:: https://coveralls.io/repos/github/bogdan-kulynych/hippiepug/badge.svg
+   :target: https://coveralls.io/github/bogdan-kulynych/hippiepug
+   :alt: Test coverage
 
 --------------
 
