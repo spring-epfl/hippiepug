@@ -20,7 +20,8 @@ import os
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 sys.path.insert(0, os.path.abspath('../../'))
 
-from hippiepug.meta import __version__, __author__, description
+from hippiepug import __title__, __version__, __copyright__, __author__, \
+                      __description__
 
 # -- General configuration ------------------------------------------------
 
@@ -50,8 +51,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'hippiepug'
-copyright = u'2018, Bogdan Kulynych, EPFL SPRING Lab'
+project = __title__
+copyright = __copyright__
 author = __author__
 
 # The version info for the project you're documenting, acts as replacement for
@@ -204,7 +205,7 @@ html_static_path = ['_static']
 #html_search_scorer = 'scorer.js'
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'hippiepugdoc'
+htmlhelp_basename = '{}doc'.format(__title__)
 
 # -- Options for LaTeX output ---------------------------------------------
 
@@ -226,7 +227,8 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'hippiepug.tex', u'hippiepug Documentation',
+    (master_doc, '{}.tex'.format(__title__),
+     u'{} Documentation'.format(__title__),
      author, 'manual'),
 ]
 
@@ -256,7 +258,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'hippiepug', u'hippiepug Documentation',
+    (master_doc, __title__, u'{} Documentation'.format(__title__),
      [author], 1)
 ]
 
@@ -270,8 +272,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'hippiepug', u'hippiepug Documentation',
-     author, 'hippiepug', description,
+    (master_doc, __title__, u'{} Documentation'.format(__title__),
+     author, __title__, __description__,
      'Miscellaneous'),
 ]
 

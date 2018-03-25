@@ -1,27 +1,27 @@
 #!/usr/bin/env python
 import os
+import re
 
 from setuptools import setup
-from hippiepug.meta import __author__, __version__, description
 
 
-install_requires = [
+INSTALL_REQUIRES = [
     'attrs>=17.4.0',
     'msgpack>=0.5.6',
-    'defaultcontext>=1.0.3',
+    'defaultcontext>=1.1.0',
 ]
 
-setup_requires = [
+SETUP_REQUIRES = [
     'pytest-runner',
 ]
 
-test_requires = [
+TEST_REQUIRES = [
     'pytest',
     'mock',
     'pytest-lazy-fixture',
 ]
 
-dev_requires = test_requires + [
+DEV_REQUIRES = TEST_REQUIRES + [
     'sphinx',
     'sphinx_rtd_theme'
 ]
@@ -32,19 +32,26 @@ with open(os.path.join(here, 'README.rst')) as f:
         long_description = f.read()
 
 
+with open(os.path.join(here, 'hippiepug/__init__.py')) as f:
+    matches = re.findall(r'(__.+__) = \'(.*)\'', f.read())
+    for var_name, var_value in matches:
+        globals()[var_name] = var_value
+
+
 setup(
-    name='hippiepug',
+    name=__title__,
     version=__version__,
-    description=description,
+    description=__description__,
     long_description=long_description,
     author=__author__,
-    author_email='hello@bogdankulynych.me',
+    author_email=__email__,
     packages=['hippiepug'],
-    license="AGPL",
-    install_requires=install_requires,
-    setup_requires=setup_requires,
-    tests_require=test_requires,
+    license=__license__,
+    install_requires=INSTALL_REQUIRES,
+    setup_requires=SETUP_REQUIRES,
+    tests_require=TEST_REQUIRES,
     extras_require={
-        'dev': dev_requires
+        'dev': DEV_REQUIRES,
+        'test': TEST_REQUIRES
     }
 )
