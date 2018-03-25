@@ -86,10 +86,6 @@ def msgpack_decoder(serialized_obj):
         return obj_repr[0]
 
 
-DEFAULT_ENCODER = msgpack_encoder
-DEFAULT_DECODER = msgpack_decoder
-
-
 @with_default_context(use_empty_init=True)
 @attr.s
 class EncodingParams(object):
@@ -103,11 +99,12 @@ class EncodingParams(object):
     >>> my_params = EncodingParams()
     >>> my_params.encoder = lambda obj: b'encoded!'
     >>> my_params.decoder = lambda encoded: b'decoded!'
-    >>> EncodingParams.set_default(my_params)
-    >>> encode(b'dummy') == 'encoded!'
+    >>> EncodingParams.set_global_default(my_params)
+    >>> encode(b'dummy') == b'encoded!'
     True
-    >>> decode(b'encoded!') == 'decoded!'
+    >>> decode(b'encoded!') == b'decoded!'
     True
+    >>> EncodingParams.reset_defaults()
     """
     encoder = attr.ib(default=attr.Factory(lambda: msgpack_encoder))
     decoder = attr.ib(default=attr.Factory(lambda: msgpack_decoder))
