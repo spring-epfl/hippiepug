@@ -12,7 +12,6 @@ hippiepug
     .. image:: https://readthedocs.org/projects/hippiepug/badge/?version=latest
        :target: https://hippiepug.readthedocs.io/?badge=latest
        :alt: Documentation Status
-
     – on `Readthedocs <https://hippiepug.readthedocs.io/>`_.
 
 :Build status:
@@ -21,9 +20,9 @@ hippiepug
        :alt: Build status
 
 :Test coverage:
-.. image:: https://coveralls.io/repos/github/bogdan-kulynych/hippiepug/badge.svg
-   :target: https://coveralls.io/github/bogdan-kulynych/hippiepug
-   :alt: Test coverage
+    .. image:: https://coveralls.io/repos/github/bogdan-kulynych/hippiepug/badge.svg
+       :target: https://coveralls.io/github/bogdan-kulynych/hippiepug
+       :alt: Test coverage
 
 :Cuteness:
     High
