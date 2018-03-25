@@ -6,6 +6,7 @@ import pytest
 from mock import MagicMock
 
 from hippiepug.tree import TreeBuilder, Tree
+from hippiepug.tree import verify_tree_inclusion_proof
 from hippiepug.pack import encode
 
 
@@ -72,44 +73,6 @@ def test_tree_get_by_hash_from_store(populated_tree):
     assert expected_node.pivot_prefix == 'Z'
 
 
-def test_tree_inclusion_proof(populated_tree):
-    """Check tree (non-)inclusion proof."""
-
-    # Inclusion in the right subtree.
-    _, (path, closure) = populated_tree.get_value_by_lookup_key(
-            'Z', return_proof=True)
-    assert len(path) == 3
-    assert path[0].pivot_prefix == 'Z'
-    assert path[1].pivot_prefix == 'ZZ'
-    assert path[2].lookup_key == 'Z'
-
-    assert len(closure) == 2
-    assert closure[0].pivot_prefix == 'AC'
-    assert closure[1].lookup_key == 'ZZZ'
-
-    # Inclusion in the left subtree.
-    path, closure = populated_tree.get_inclusion_proof('AC')
-    assert len(path) == 3
-    assert path[0].pivot_prefix == 'Z'
-    assert path[1].pivot_prefix == 'AC'
-    assert path[2].lookup_key == 'AC'
-
-    assert len(closure) == 2
-    assert closure[0].pivot_prefix == 'ZZ'
-    assert closure[1].lookup_key == 'AB'
-
-    # Non-inclusion.
-    path, closure = populated_tree.get_inclusion_proof('ZZ')
-    assert len(path) == 3
-    assert path[0].pivot_prefix == 'Z'
-    assert path[1].pivot_prefix == 'ZZ'
-    assert path[2].lookup_key == 'ZZZ'
-
-    assert len(closure) == 2
-    assert closure[0].pivot_prefix == 'AC'
-    assert closure[1].lookup_key == 'Z'
-
-
 def test_tree_contains(populated_tree):
     """Check membership query."""
     assert 'AB' in populated_tree
@@ -134,3 +97,64 @@ def test_tree_get_node_by_hash_fails_if_not_node(populated_tree):
     extra_obj_hash = populated_tree.object_store.add(encode(b'extra'))
     with pytest.raises(ValueError):
         populated_tree._get_node_by_hash(extra_obj_hash)
+
+
+def test_tree_inclusion_proof(populated_tree):
+    """Check tree (non-)inclusion proof."""
+
+    # Inclusion in the right subtree.
+    _, (path, closure) = populated_tree.get_value_by_lookup_key(
+            'Z', return_proof=True)
+    assert len(path) == 3
+    assert path[0].pivot_prefix == 'Z'
+    assert path[1].pivot_prefix == 'ZZ'
+    assert path[2].lookup_key == 'Z'
+
+    assert len(closure) == 2
+    assert closure[0].pivot_prefix == 'AC'
+    assert closure[1].lookup_key == 'ZZZ'
+
+    # Inclusion in the left subtree.
+    _, (path, closure) = populated_tree.get_value_by_lookup_key('AC',
+            return_proof=True)
+    assert len(path) == 3
+    assert path[0].pivot_prefix == 'Z'
+    assert path[1].pivot_prefix == 'AC'
+    assert path[2].lookup_key == 'AC'
+
+    assert len(closure) == 2
+    assert closure[0].pivot_prefix == 'ZZ'
+    assert closure[1].lookup_key == 'AB'
+
+    # Non-inclusion.
+    _, (path, closure) = populated_tree.get_value_by_lookup_key('ZZ',
+            return_proof=True)
+    assert len(path) == 3
+    assert path[0].pivot_prefix == 'Z'
+    assert path[1].pivot_prefix == 'ZZ'
+    assert path[2].lookup_key == 'ZZZ'
+
+    assert len(closure) == 2
+    assert closure[0].pivot_prefix == 'AC'
+    assert closure[1].lookup_key == 'Z'
+
+
+@pytest.mark.parametrize('lookup_key', ['AB', 'AC', 'ZZZ', 'Z'])
+def test_tree_proof_verification_util(populated_tree, lookup_key):
+    root = populated_tree.root
+    payload, proof = populated_tree.get_value_by_lookup_key(lookup_key,
+            return_proof=True)
+
+    # Check proof of inclusion.
+    store = populated_tree.object_store.__class__()
+    assert verify_tree_inclusion_proof(store, root, lookup_key, payload, proof)
+
+    # Check proof of inclusion fails when lookup_key in the leaf is different
+    store = populated_tree.object_store.__class__()
+    proof[0][-1].lookup_key = 'hacked'
+    assert not verify_tree_inclusion_proof(store, root, lookup_key, payload, proof)
+
+    # Check proof of inclusion fails when payload is different
+    store = populated_tree.object_store.__class__()
+    payload = b'non-existent'
+    assert not verify_tree_inclusion_proof(store, root, lookup_key, payload, proof)

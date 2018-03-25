@@ -1,6 +1,7 @@
 """
 Tools for building and interpreting hash skipchains.
 """
+from warnings import warn
 
 from .struct import ChainBlock
 from .pack import encode, decode
@@ -93,7 +94,7 @@ class Chain(object):
         :raises: If the index is out of bounds,
                  raises ``IndexError``.
         """
-        if self.head is None:
+        if self.head_block is None:
             return None
         if return_proof:
             proof = []
@@ -104,18 +105,27 @@ class Chain(object):
 
         hash_value = self.head
         current_block = self.head_block
-        while current_block is not None:
-            if return_proof:
-                proof.append(current_block)
-            # When found:
-            if index == current_block.index:
+        while True:
+            if current_block is None:
+                break
+
+            try:
                 if return_proof:
-                    return (current_block, proof)
-                return current_block
-            # Otherwise, follow the fingers:
-            _, hash_value = [(f, h) for (f, h) in current_block.fingers
-                      if f >= index][0]
-            current_block = self._get_block_by_hash(hash_value)
+                    proof.append(current_block)
+                # When found:
+                if index == current_block.index:
+                    if return_proof:
+                        return (current_block, proof)
+                    return current_block
+                # Otherwise, follow the fingers:
+                _, hash_value = [(f, h) for (f, h) in current_block.fingers
+                          if f >= index][0]
+                current_block = self._get_block_by_hash(hash_value)
+
+            except Exception as e:
+                warn('Exception occured while processing block %s: %s' % (
+                    current_block, e))
+                break
 
     def __getitem__(self, index):
         """Get block by index."""
@@ -213,11 +223,15 @@ class BlockBuilder(object):
         new_block.index = current_block.index + 1
 
         finger_indices = self.skipchain_indices(new_block.index)
-        new_fingers = [(current_block.index, self.chain.head)]
+        # NOTE: We want to use lists, and not tuples here, b/c
+        #       msgpack transforms tuples into lists. So if these
+        #       were tuples, comparison of fresh and deserialized
+        #       blocks would be non-trivial.
+        new_fingers = [[current_block.index, self.chain.head]]
         # TODO: Do we also need to generate new fingers here?
         for index, prev_hash in current_block.fingers:
             if index in finger_indices:
-                new_fingers.append((index, prev_hash))
+                new_fingers.append([index, prev_hash])
 
         new_block.fingers = new_fingers
         return new_block
@@ -247,3 +261,20 @@ class BlockBuilder(object):
                 'chain={self.chain}, '
                 'payload=\'{self.payload}\')').format(
                     self=self)
+
+
+def verify_chain_inclusion_proof(store, head, block, proof):
+    """Verify inclusion proof for a block on a chain.
+
+    :param store: Object store
+    :param head: Chain head
+    :param block: Block
+    :param proof: Inclusion proof
+    :type proof: list of encoded blocks
+    :returns: Whether the block is included in the chain, based on the proof.
+    """
+    for other_block in proof:
+        store.add(encode(other_block))
+    verifier_chain = Chain(store, head=head)
+    retrieved_block = verifier_chain.get_block_by_index(block.index)
+    return retrieved_block == block

@@ -5,6 +5,7 @@ from mock import MagicMock
 
 from hippiepug.struct import ChainBlock
 from hippiepug.chain import Chain, BlockBuilder
+from hippiepug.chain import verify_chain_inclusion_proof
 from hippiepug.store import IntegrityValidationError
 from hippiepug.pack import encode, decode
 
@@ -205,3 +206,40 @@ def test_chain_proof(object_store):
     chain2 = Chain(proof_store, head=chain1.head)
     assert chain2.get_block_by_index(2).payload == 'Block 2'
 
+
+def test_chain_proof_verification_util(object_store):
+    """Check verification utility."""
+    chain1 = Chain(object_store)
+    for i in range(10):
+        block_builder = BlockBuilder(chain1)
+        block_builder.payload='Block %i' % i
+        block_builder.commit()
+
+    # Check proof of inclusion.
+    store = chain1.object_store.__class__()
+    result, proof = chain1.get_block_by_index(2, return_proof=True)
+    assert verify_chain_inclusion_proof(store, chain1.head, result, proof)
+
+    # Check proof of inclusion detects bad block.
+    store = chain1.object_store.__class__()
+    bad_block = ChainBlock('non-existent')
+    assert not verify_chain_inclusion_proof(
+            store, chain1.head, bad_block, proof)
+
+    # Check proof of inclusion detects bad block with the same index.
+    store = chain1.object_store.__class__()
+    bad_block = ChainBlock('non-existent', index=result.index)
+    assert not verify_chain_inclusion_proof(
+            store, chain1.head, bad_block, proof)
+
+    # Check proof of inclusion fails when it's insufficient
+    store = chain1.object_store.__class__()
+    assert not verify_chain_inclusion_proof(
+            store, chain1.head, result, proof=[])
+
+    # Check proof of inclusion fails when it's malformed
+    store = chain1.object_store.__class__()
+    proof[0].fingers = None
+    bad_head = store.hash_object(encode(proof[0]))
+    assert not verify_chain_inclusion_proof(
+            store, bad_head, result, proof)
