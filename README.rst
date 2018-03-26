@@ -32,10 +32,10 @@ hippiepug
 
 This library provides implementations of two cryptographic data structures:
 
-- Blockchains with log(n) sublinear traversal, implemented as deterministic hash skipchains
-- Verifiable unique-resolution dictionary, implemented as a key-value Merkle tree
+- Blockchains with log(n) sublinear traversal, implemented as deterministic hash skipchains. In this kind of blockchain verifying that block *b* extends block *a* does not require to download and process all blocks between *a* and *b*, but only a logarithmic amount of blocks.
+- Verifiable unique-resolution dictionary, implemented as a key-value Merkle tree.
 
-Both are meant to be used with a content-addressable storage. Each data structures supports logarithmic queries, and logarithmic proofs of inclusion:
+Both are meant to be used with a content-addressable storage. Each data structure supports logarithmic queries, and logarithmic proofs of inclusion:
 
 +-----------------------+--------------------------+----------------------+----------------+
 |                       | Retrievals per query     | Inclusion proof size | Append         |
@@ -46,6 +46,21 @@ Both are meant to be used with a content-addressable storage. Each data structur
 +-----------------------+--------------------------+----------------------+----------------+
 
 with *n* being the size of the dictionary, or the number of blocks in the case of a chain.
+
+Getting started
+~~~~~~~~~~~~~~~
+
+You can install the library directly from Github by running the following command:
+
+.. code-block::  bash
+
+   pip install -e git+git@github.com:bogdan-kulynych/hippiepug.git#egg=hippiepug
+
+To run the tests, you can do:
+
+.. code-block::  bash
+
+   python setup.py test
 
 Acknowledgements
 ~~~~~~~~~~~~~~~~
