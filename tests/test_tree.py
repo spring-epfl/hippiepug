@@ -23,7 +23,7 @@ LOOKUP_KEYS = ['AB', 'AC', 'ZZZ', 'Z']
 def populated_tree(object_store):
     builder = TreeBuilder(object_store)
     for lookup_key in LOOKUP_KEYS:
-        builder[lookup_key] = b'%s value' % lookup_key.encode('utf-8')
+        builder[lookup_key] = b'{} value'.format(lookup_key.encode('utf-8'))
     return builder.commit()
 
 
