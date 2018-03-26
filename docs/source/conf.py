@@ -299,5 +299,3 @@ html_theme_options = {
     'sticky_navigation': True,
     'navigation_depth': 2,
 }
-
-

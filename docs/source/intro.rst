@@ -2,11 +2,11 @@
 Getting started
 ===============
 
-You can install the library from Github by cloning the repo, and running the following command from the cloned folder:
+You can install the library directly from Github by running the following command from the cloned folder:
 
 .. code-block::  bash
 
-   pip install -e git+<github_url>
+   pip install -e git+git@github.com:bogdan-kulynych/hippiepug.git#egg=hippiepug
 
 To run the tests, execute:
 

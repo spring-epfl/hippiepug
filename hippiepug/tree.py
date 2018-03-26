@@ -282,7 +282,6 @@ class TreeBuilder(object):
                     self=self)
 
 
-# TODO: Verify correctness of the tree root!
 def verify_tree_inclusion_proof(store, root, lookup_key, value, proof):
     """Verify inclusion proof for a tree.
 
