@@ -82,7 +82,7 @@ class Chain(object):
             return block
 
     def get_block_by_index(self, index, return_proof=False):
-        """Retrieve a block by its index.
+        """Get block by index.
 
         Optionally returns inclusion proof, that is a list of intermediate
         blocks, sufficient to verify the inclusion of the retrieved block.
@@ -205,7 +205,11 @@ class BlockBuilder(object):
 
     @staticmethod
     def skipchain_indices(index):
-        """Finger indices for the current index."""
+        """Finger indices for a given index.
+
+        :param index: Any index
+        :type index: int >= 0
+        """
         return {index - 1 - ((index - 1) % (2**f)) for f in range(64)}
 
     def _make_next_block(self, payload=None):
@@ -270,8 +274,8 @@ def verify_chain_inclusion_proof(store, head, block, proof):
     :param head: Chain head
     :param block: Block
     :param proof: Inclusion proof
-    :type proof: list of encoded blocks
-    :returns: Whether the block is included in the chain, based on the proof.
+    :type proof: list of decoded blocks
+    :returns: bool
     """
     for other_block in proof:
         store.add(encode(other_block))

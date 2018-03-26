@@ -33,7 +33,10 @@ OTHER_MARKER = 3
 
 
 def msgpack_encoder(obj):
-    """Represent structure as tuple and serialize using msgpack."""
+    """Represent structure as tuple and serialize using msgpack.
+
+    Default encoder.
+    """
 
     if isinstance(obj, ChainBlock):
         marker = CHAIN_BLOCK_MARKER
@@ -56,7 +59,10 @@ def msgpack_encoder(obj):
 
 
 def msgpack_decoder(serialized_obj):
-    """Deserialize structure from msgpack-encoded tuple."""
+    """Deserialize structure from msgpack-encoded tuple.
+
+    Default decoder.
+    """
 
     try:
         proto_version, marker, obj_repr = msgpack.unpackb(

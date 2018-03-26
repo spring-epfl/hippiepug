@@ -128,8 +128,8 @@ class Tree(object):
 
         :param lookup_key: Lookup key
         :param return_proof: Whether to return inclusion proof
-        :returns: Found value or None, or (value, proof) tuple if
-                  return_proof is True.
+        :returns: Found value or ``None``, or ``(value, proof)`` tuple if
+                  ``return_proof`` is True.
         """
         path, closure = self._get_inclusion_proof(lookup_key)
         result = None
@@ -290,10 +290,9 @@ def verify_tree_inclusion_proof(store, root, lookup_key, value, proof):
     :param lookup_key: Lookup key
     :param value: Value associated with the lookup key
     :param proof: Inclusion proof
-    :type proof: tuple, containing list of encoded path nodes, and encoded
+    :type proof: tuple containing list of decoded path nodes, and decoded
                  closure nodes.
-    :returns: Whether the key and payload are included in the tree,
-              based on the proof.
+    :returns: bool
     """
     path, closure = proof
     for node in path + closure:
