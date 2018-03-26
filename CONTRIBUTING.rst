@@ -1,9 +1,9 @@
-==================
-Contributing guide
-==================
+============
+Contributing
+============
 
-Setting up
-----------
+Dev setup
+---------
 
 To install development dependencies, clone the package from Github, and run within the folder:
 

@@ -50,7 +50,7 @@ and pass as ``backend``:
     store = Sha256DictStore(backend=CustomBackend())
 
 To change the hash function, subclass :py:class:`hippiepug.store.BaseDictStore`,
-and change the :py:func:`hippiepug.store.BaseDictStore.hash_object`. You can
+and implement the ``hash_object`` function. You can
 also define a completely different store by implementing abstract base
 :py:class:`hippiepug.store.BaseStore`.
 
