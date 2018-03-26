@@ -188,7 +188,7 @@ def test_chain_iterator(chain_and_hashes):
         assert block_hash == expected_block_hash
 
 
-def test_chain_proof(object_store):
+def test_chain_inclusion_proof(object_store):
     """Check returned inclusion proof."""
     chain1 = Chain(object_store)
     for i in range(10):
@@ -207,39 +207,59 @@ def test_chain_proof(object_store):
     assert chain2.get_block_by_index(2).payload == 'Block 2'
 
 
-def test_chain_proof_verification_util(object_store):
-    """Check verification utility."""
-    chain1 = Chain(object_store)
-    for i in range(10):
-        block_builder = BlockBuilder(chain1)
-        block_builder.payload='Block %i' % i
-        block_builder.commit()
+def test_chain_proof_verif(chain_and_hashes):
+    """Check proof verification utility."""
+    chain, hashes = chain_and_hashes
 
-    # Check proof of inclusion.
-    store = chain1.object_store.__class__()
-    result, proof = chain1.get_block_by_index(2, return_proof=True)
-    assert verify_chain_inclusion_proof(store, chain1.head, result, proof)
+    for i in range(len(hashes)):
+        result, proof = chain.get_block_by_index(i, return_proof=True)
+        store = chain.object_store.__class__()
+        assert verify_chain_inclusion_proof(
+                store, chain.head, result, proof)
 
-    # Check proof of inclusion detects bad block.
-    store = chain1.object_store.__class__()
+
+def test_chain_proof_verif_bad_block(chain_and_hashes):
+    """Check proof of inclusion detects bad block."""
+    chain, hashes = chain_and_hashes
+    store = chain.object_store.__class__()
     bad_block = ChainBlock('non-existent')
-    assert not verify_chain_inclusion_proof(
-            store, chain1.head, bad_block, proof)
+    result, proof = chain.get_block_by_index(0, return_proof=True)
 
-    # Check proof of inclusion detects bad block with the same index.
-    store = chain1.object_store.__class__()
+    assert not verify_chain_inclusion_proof(
+            store, chain.head, bad_block, proof)
+
+
+def test_chain_proof_verif_bad_block_same_index(chain_and_hashes):
+    """Check proof of inclusion detects bad block with the same index."""
+    chain, hashes = chain_and_hashes
+    store = chain.object_store.__class__()
+    result, proof = chain.get_block_by_index(0, return_proof=True)
     bad_block = ChainBlock('non-existent', index=result.index)
-    assert not verify_chain_inclusion_proof(
-            store, chain1.head, bad_block, proof)
 
-    # Check proof of inclusion fails when it's insufficient
-    store = chain1.object_store.__class__()
     assert not verify_chain_inclusion_proof(
-            store, chain1.head, result, proof=[])
+            store, chain.head, bad_block, proof)
 
-    # Check proof of inclusion fails when it's malformed
-    store = chain1.object_store.__class__()
+
+def test_chain_proof_verif_insufficient(chain_and_hashes):
+    """Check proof of inclusion fails when it's insufficient."""
+    chain, hashes = chain_and_hashes
+    store = chain.object_store.__class__()
+    result, proof = chain.get_block_by_index(0, return_proof=True)
+    assert not verify_chain_inclusion_proof(
+            store, chain.head, result, proof=[])
+
+
+def test_chain_proof_verif_malformed(chain_and_hashes):
+    """Check proof of inclusion fails when it's malformed."""
+    chain, hashes = chain_and_hashes
+    if chain.head_block.index == 0:
+        return
+
+    store = chain.object_store.__class__()
+    result, proof = chain.get_block_by_index(0, return_proof=True)
     proof[0].fingers = None
     bad_head = store.hash_object(encode(proof[0]))
-    assert not verify_chain_inclusion_proof(
-            store, bad_head, result, proof)
+
+    with pytest.warns(UserWarning, match='Exception occured'):
+        assert not verify_chain_inclusion_proof(
+                store, bad_head, result, proof)

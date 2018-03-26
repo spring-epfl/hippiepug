@@ -7,6 +7,7 @@ import os
 from warnings import warn
 
 from .struct import TreeNode, TreeLeaf
+from .store import IntegrityValidationError
 from .pack import encode, decode
 
 
@@ -76,30 +77,48 @@ class Tree(object):
 
             try:
                 if isinstance(current_node, TreeNode):
-                    if current_node.left_hash:
-                        left_child = self._get_node_by_hash(current_node.left_hash)
-                    if current_node.right_hash:
-                        right_child = self._get_node_by_hash(current_node.right_hash)
 
+                    if current_node.left_hash:
+                        left_child = self._get_node_by_hash(
+                                current_node.left_hash)
+                    if current_node.right_hash:
+                        right_child = self._get_node_by_hash(
+                                current_node.right_hash)
+
+                    integrity_issue_msg = ('Not enough nodes to validate '
+                                           'inclusion.')
                     if lookup_key < current_node.pivot_prefix:
                         current_node = left_child
                         if right_child is not None:
                             closure_nodes.append(right_child)
+
+                        # If right hash is specified, but right node is not
+                        # found, can not validate inclusion.
+                        elif current_node.right_hash is not None:
+                            raise ValueError(integrity_issue_msg)
+
                     else:
                         current_node = right_child
                         if left_child is not None:
                             closure_nodes.append(left_child)
 
-                # Stop when leaf found.
+                        # Similarly, if left hash is specified, but right
+                        # node is not found, can not validate inclusion.
+                        elif current_node.left_hash is not None:
+                            raise ValueError(integrity_issue_msg)
+
+                # Stop when leaf is found.
                 elif isinstance(current_node, TreeLeaf):
                     break
+
+                # Not a tree node.
                 else:
                     raise TypeError('Invalid node type.')
 
+            # If something happened, likely a node was malformed.
             except Exception as e:
                 warn('Exception occured when handling node %s: %s' % (
                     current_node, e))
-                # Also stop when something is broken.
                 break
 
         return path_nodes, closure_nodes
@@ -115,14 +134,13 @@ class Tree(object):
         path, closure = self._get_inclusion_proof(lookup_key)
         result = None
         if path:
-            try:
-                if path[-1].lookup_key == lookup_key:
-                    serialized_payload = self.object_store.get(
-                            path[-1].payload_hash)
-                    result = serialized_payload
-            except Exception as e:
-                warn('Exception occured when handling node %s: %s' % (
-                    path[-1], e))
+            maybe_leaf = path[-1]
+            if maybe_leaf is not None and (
+                    hasattr(maybe_leaf, 'lookup_key')) and (
+                        maybe_leaf.lookup_key == lookup_key):
+                serialized_payload = self.object_store.get(
+                        path[-1].payload_hash)
+                result = serialized_payload
 
         if return_proof:
             return result, (path, closure)
@@ -264,13 +282,14 @@ class TreeBuilder(object):
                     self=self)
 
 
-def verify_tree_inclusion_proof(store, root, lookup_key, payload, proof):
+# TODO: Verify correctness of the tree root!
+def verify_tree_inclusion_proof(store, root, lookup_key, value, proof):
     """Verify inclusion proof for a tree.
 
     :param store: Object store
     :param head: Tree root
     :param lookup_key: Lookup key
-    :param payload: Payload hash associated with the lookup key
+    :param value: Value associated with the lookup key
     :param proof: Inclusion proof
     :type proof: tuple, containing list of encoded path nodes, and encoded
                  closure nodes.
@@ -280,7 +299,7 @@ def verify_tree_inclusion_proof(store, root, lookup_key, payload, proof):
     path, closure = proof
     for node in path + closure:
         store.add(encode(node))
-    store.add(payload)
+    store.add(value)
     verifier_tree = Tree(store, root=root)
     retrieved_payload = verifier_tree.get_value_by_lookup_key(lookup_key)
-    return retrieved_payload == payload
+    return retrieved_payload == value
