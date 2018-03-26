@@ -19,6 +19,7 @@ Contents
 
    usage
    api
+   contributing
    license
 
 Indices and tables
