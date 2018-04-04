@@ -6,13 +6,13 @@
 hippiepug
 =========
 
-*Sublinear-traversal blockchains and efficient key-value Merkle trees*
+*Sublinear-lookup blockchains and efficient key-value Merkle trees*
 
-+------------------------------------------------------+----------------+---------------+
-| `Documentation <https://hippiepug.readthedocs.io/>`_ | Build status   | Test coverage |
-+======================================================+================+===============+
-| |docs_status|                                        | |build_status| | |test_cov|    |
-+------------------------------------------------------+----------------+---------------+
++---------------+----------------+---------------+
+| Documentation | Build status   | Test coverage |
++===============+================+===============+
+| |docs_status| | |build_status| | |test_cov|    |
++---------------+----------------+---------------+
 
 .. |docs_status| image:: https://readthedocs.org/projects/hippiepug/badge/?version=latest
    :target: https://hippiepug.readthedocs.io/?badge=latest
@@ -26,19 +26,23 @@ hippiepug
    :target: https://coveralls.io/github/bogdan-kulynych/hippiepug
    :alt: Test coverage
 
+|
+
+Check out the `documentation <https://hippiepug.readthedocs.io/>`_.
+
 --------------
 
 .. inclusion-marker-do-not-remove
 
 This library provides implementations of two cryptographic data structures:
 
-- Blockchains with log(n) sublinear traversal, implemented as deterministic hash skipchains. In this kind of blockchain verifying that block *b* extends block *a* does not require to download and process all blocks between *a* and *b*, but only a logarithmic amount of blocks.
+- Blockchains with log(n) lookups, implemented as deterministic hash skipchains. In this kind of blockchain verifying that block *b* extends block *a* does not require to download and process all blocks between *a* and *b*, but only a logarithmic amount of blocks.
 - Verifiable unique-resolution dictionary, implemented as a key-value Merkle tree.
 
 Both are meant to be used with a content-addressable storage. Each data structure supports logarithmic queries, and logarithmic proofs of inclusion:
 
 +-----------------------+--------------------------+----------------------+----------------+
-|                       | Retrievals per query     | Inclusion proof size | Append         |
+|                       | Retrievals per lookup    | Inclusion proof size | Append         |
 +=======================+==========================+======================+================+
 | Hash skipchain        | ~ log(n)                 | ~ log(n)             | O(1)           |
 +-----------------------+--------------------------+----------------------+----------------+
@@ -68,4 +72,3 @@ Acknowledgements
 The library is a reimplementation of G. Danezis's `hippiehug`_.
 
 .. _hippiehug:  https://github.com/gdanezis/rousseau-chain
-
