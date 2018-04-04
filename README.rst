@@ -1,4 +1,4 @@
-.. image:: https://raw.githubusercontent.com/spring-epfl/hippiepug/master/hippiepug.svg
+.. image:: https://raw.githubusercontent.com/spring-epfl/hippiepug/master/hippiepug.svg?sanitize=true
    :width: 100px
    :alt: Hippiepug
 
@@ -6,13 +6,11 @@
 hippiepug
 =========
 
-*Sublinear-lookup blockchains and efficient key-value Merkle trees*
-
-|
-
 |pypi| |dev_status| |build_status| |test_cov| |docs_status| 
 
 |
+
+Sublinear-lookup blockchains and efficient key-value Merkle trees. Check out the `documentation <https://hippiepug.readthedocs.io/>`_.
 
 .. |pypi| image:: https://img.shields.io/pypi/v/hippiepug.svg
    :target: https://pypi.org/project/hippiepug/
@@ -33,9 +31,6 @@ hippiepug
 .. |test_cov| image:: https://coveralls.io/repos/github/bogdan-kulynych/hippiepug/badge.svg
    :target: https://coveralls.io/github/bogdan-kulynych/hippiepug
    :alt: Test coverage
-
-
-Check out the `documentation <https://hippiepug.readthedocs.io/>`_.
 
 --------------
 
