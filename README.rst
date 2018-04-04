@@ -1,4 +1,4 @@
-.. image:: hippiepug.svg
+.. image:: https://raw.githubusercontent.com/spring-epfl/hippiepug/master/hippiepug.svg
    :width: 100px
    :alt: Hippiepug
 
@@ -8,15 +8,23 @@ hippiepug
 
 *Sublinear-lookup blockchains and efficient key-value Merkle trees*
 
-+---------------+----------------+---------------+
-| Documentation | Build status   | Test coverage |
-+===============+================+===============+
-| |docs_status| | |build_status| | |test_cov|    |
-+---------------+----------------+---------------+
+|
+
+|pypi| |dev_status| |build_status| |test_cov| |docs_status| 
+
+|
+
+.. |pypi| image:: https://img.shields.io/pypi/v/hippiepug.svg
+   :target: https://pypi.org/project/hippiepug/
+   :alt: PyPI version
+
+.. |dev_status| image:: https://img.shields.io/pypi/status/hippiepug.svg
+   :target: https://pypi.org/project/hippiepug/
+   :alt: Development status
 
 .. |docs_status| image:: https://readthedocs.org/projects/hippiepug/badge/?version=latest
    :target: https://hippiepug.readthedocs.io/?badge=latest
-   :alt: Documentation Status
+   :alt: Documentation status
 
 .. |build_status| image:: https://travis-ci.org/bogdan-kulynych/hippiepug.svg?branch=master
    :target: https://travis-ci.org/bogdan-kulynych/hippiepug
@@ -26,7 +34,6 @@ hippiepug
    :target: https://coveralls.io/github/bogdan-kulynych/hippiepug
    :alt: Test coverage
 
-|
 
 Check out the `documentation <https://hippiepug.readthedocs.io/>`_.
 
