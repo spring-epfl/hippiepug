@@ -68,6 +68,10 @@ To run the tests, you can do:
 Acknowledgements
 ~~~~~~~~~~~~~~~~
 
-The library is a reimplementation of G. Danezis's `hippiehug`_.
+* The library is a reimplementation of G. Danezis's `hippiehug`_ (hence the name).
+* This work is funded by the `NEXTLEAP project`_ within the European Union’s Horizon 2020 Framework Programme for Research and Innovation (H2020-ICT-2015, ICT-10-2015) under grant agreement 688722.
+* The hippie pug logo kindly donated by `M. Naiem`_.
 
 .. _hippiehug:  https://github.com/gdanezis/rousseau-chain
+.. _NEXTLEAP project:  https://nextleap.eu
+.. _M. Naiem:  http://mariam.space
