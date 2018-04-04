@@ -11,15 +11,11 @@ hippiepug
 
 Sublinear-lookup blockchains and efficient key-value Merkle trees.
 
-Check out the `documentation <https://hippiepug.readthedocs.io/>`_
+Check out the `documentation <https://hippiepug.readthedocs.io/>`_.
 
 .. |pypi| image:: https://img.shields.io/pypi/v/hippiepug.svg
    :target: https://pypi.org/project/hippiepug/
    :alt: PyPI version
-
-.. |dev_status| image:: https://img.shields.io/pypi/status/hippiepug.svg
-   :target: https://pypi.org/project/hippiepug/
-   :alt: Development status
 
 .. |docs_status| image:: https://readthedocs.org/projects/hippiepug/badge/?version=latest
    :target: https://hippiepug.readthedocs.io/?badge=latest
