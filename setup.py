@@ -47,6 +47,7 @@ setup(
     author_email=__email__,
     packages=['hippiepug'],
     license=__license__,
+    url=__url__,
     install_requires=INSTALL_REQUIRES,
     setup_requires=SETUP_REQUIRES,
     tests_require=TEST_REQUIRES,
