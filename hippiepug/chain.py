@@ -270,7 +270,7 @@ class BlockBuilder(object):
 def verify_chain_inclusion_proof(store, head, block, proof):
     """Verify inclusion proof for a block on a chain.
 
-    :param store: Object store
+    :param store: Object store, may be empty
     :param head: Chain head
     :param block: Block
     :param proof: Inclusion proof

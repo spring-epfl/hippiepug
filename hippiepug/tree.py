@@ -285,7 +285,7 @@ class TreeBuilder(object):
 def verify_tree_inclusion_proof(store, root, lookup_key, value, proof):
     """Verify inclusion proof for a tree.
 
-    :param store: Object store
+    :param store: Object store, may be empty
     :param head: Tree root
     :param lookup_key: Lookup key
     :param value: Value associated with the lookup key

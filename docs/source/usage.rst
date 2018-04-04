@@ -181,7 +181,7 @@ You can get the proof of block inclusion from a chain view:
 Proof is just a set of blocks between head block and the request block (in
 this case zero).
 
-To verify the proof, the querier needs to locally reproduce a store,
+To verify the proof, the querier needs to locally reproduce a store
 populating it with the blocks in the proof, and then query normally the chain
 in the reproduced store. This can be done using a utility
 :py:func:`hippiepug.chain.verify_chain_inclusion_proof`.
@@ -191,7 +191,8 @@ in the reproduced store. This can be done using a utility
     from hippiepug.chain import verify_chain_inclusion_proof
 
     verification_store = Sha256DictStore()
-    verify_chain_inclusion_proof(store, chain.head, block, proof)  # True.
+    verify_chain_inclusion_proof(verification_store,
+                                 chain.head, block, proof)  # True.
 
 
 Tree
@@ -206,22 +207,22 @@ You can get the proof of value and lookup key inclusion from a tree view:
 
 For trees, the proof is split for convenience into a tuple of two lists:
 ``path`` – list of nodes on the path from root to the leaf containing the
-lookup key, and ``closure`` – list of nodes that need to be present to
+lookup key, and ``closure`` – list of other nodes that need to be known to
 verify hashes of the tree root.
 
 The mechanism of verifying an explicit proof is the same as with chains:
-locally reproduce a store, populating it with all the nodes in the proof,
-and then query normally the tree n the reproduced store. You can use a utility
-:py:func:`hippiepug.tree.verify_tree_inclusion_proof`.
+locally reproduce a store populating it with all the nodes in the proof,
+and then query normally the tree in the reproduced store. This can be done
+using a utility :py:func:`hippiepug.tree.verify_tree_inclusion_proof`.
 
 .. code-block:: python
 
     from hippiepug.tree import verify_tree_inclusion_proof
 
     verification_store = Sha256DictStore()
-    verify_chain_inclusion_proof(store, chain.head,
-                                 lookup_key='foo', value=b'bar',
-                                 proof=proof)  # True.
+    verify_tree_inclusion_proof(verification_store, tree.head,
+                                lookup_key='foo', value=b'bar',
+                                proof=proof)  # True.
 
 
 Serialization
@@ -237,7 +238,7 @@ Serialization
     decode(encode(block)) == block  # True
 
 If you want to define custom serializers, be sure to check the documentation of
-:py:mod:`hippiepug.pack`. Basically, you need to be careful with custom encoders
+:py:mod:`hippiepug.pack`. You need to be careful with custom encoders
 to not jeopardize security of the data structure.
 
 Once you have defined custom encoder and decoder, you can set them to global
