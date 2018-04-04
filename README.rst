@@ -53,11 +53,11 @@ with *n* being the size of the dictionary, or the number of blocks in the case o
 Getting started
 ~~~~~~~~~~~~~~~
 
-You can install the library directly from Github by running the following command:
+You can install the library from PyPI:
 
 .. code-block::  bash
 
-   pip install -e git+git@github.com:bogdan-kulynych/hippiepug.git#egg=hippiepug
+   pip install hippiepug
 
 To run the tests, you can do:
 
