@@ -22,11 +22,11 @@ Check out the `documentation <https://hippiepug.readthedocs.io/>`_.
    :alt: Documentation status
 
 .. |build_status| image:: https://api.travis-ci.org/spring-epfl/hippiepug.svg?branch=master
-   :target: https://travis-ci.org/bogdan-kulynych/hippiepug
+   :target: https://travis-ci.org/spring-epfl/hippiepug
    :alt: Build status
 
-.. |test_cov| image:: https://coveralls.io/repos/github/bogdan-kulynych/hippiepug/badge.svg
-   :target: https://coveralls.io/github/bogdan-kulynych/hippiepug
+.. |test_cov| image:: https://coveralls.io/repos/github/spring-epfl/hippiepug/badge.svg
+   :target: https://coveralls.io/github/spring-epfl/hippiepug
    :alt: Test coverage
 
 --------------
