@@ -1,6 +1,7 @@
 """
 Tools for building and interpreting hash skipchains.
 """
+
 from warnings import warn
 
 from .struct import ChainBlock
@@ -8,7 +9,7 @@ from .pack import encode, decode
 
 
 class Chain(object):
-    """Hash skipchain (hash-chain with skip-list pointers).
+    """Hash skipchain (hash chain with skip-list pointers).
 
     To add a new block to a chain, use :py:class:`BlockBuilder`.
 
@@ -48,8 +49,7 @@ class Chain(object):
         """
         :param object_store: Object store
         :param head: The hash of the head block
-        :param cache: Cache
-        :type cache: ``dict``
+        :param dict cache: Cache
         """
         self.object_store = object_store
         self.head = head
@@ -87,8 +87,8 @@ class Chain(object):
         Optionally returns inclusion proof, that is a list of intermediate
         blocks, sufficient to verify the inclusion of the retrieved block.
 
-        :param index: Block index
-        :param return_proof: Whether to return inclusion proof
+        :param int>=0 index: Block index
+        :param bool return_proof: Whether to return inclusion proof
         :returns: Found block or None, or (block, proof) tuple if
                   return_proof is True.
         :raises: If the index is out of bounds,
@@ -188,8 +188,7 @@ class BlockBuilder(object):
     def payload(self, value):
         """Set the block payload.
 
-        :param value: Block payload
-        :type value: Byte array
+        :param bytes value: Block payload
         """
         self._block.payload = value
 
@@ -207,8 +206,7 @@ class BlockBuilder(object):
     def skipchain_indices(index):
         """Finger indices for a given index.
 
-        :param index: Any index
-        :type index: int >= 0
+        :param int>=0 index: Block index
         """
         return {index - 1 - ((index - 1) % (2**f)) for f in range(64)}
 
@@ -282,3 +280,4 @@ def verify_chain_inclusion_proof(store, head, block, proof):
     verifier_chain = Chain(store, head=head)
     retrieved_block = verifier_chain.get_block_by_index(block.index)
     return retrieved_block == block
+

@@ -77,7 +77,7 @@ class Tree(object):
 
             try:
                 if isinstance(current_node, TreeNode):
-
+                    # Maybe retrive left and right child.
                     if current_node.left_hash:
                         left_child = self._get_node_by_hash(
                                 current_node.left_hash)
@@ -139,7 +139,7 @@ class Tree(object):
                     hasattr(maybe_leaf, 'lookup_key')) and (
                         maybe_leaf.lookup_key == lookup_key):
                 serialized_payload = self.object_store.get(
-                        path[-1].payload_hash)
+                        maybe_leaf.payload_hash)
                 result = serialized_payload
 
         if return_proof:
@@ -179,7 +179,6 @@ class TreeBuilder(object):
     """Builder for a key-value Merkle tree.
 
     :param object_store: Object store
-    :param items: Dictionary of items to be committed to a tree.
 
     You can add items using a dict-like interface:
 
@@ -206,7 +205,6 @@ class TreeBuilder(object):
 
         :param items: An iterable of comparable and serializable items
         """
-
         if len(items) == 0:
             raise ValueError("No items to put.")
 
@@ -301,3 +299,4 @@ def verify_tree_inclusion_proof(store, root, lookup_key, value, proof):
     verifier_tree = Tree(store, root=root)
     retrieved_payload = verifier_tree.get_value_by_lookup_key(lookup_key)
     return retrieved_payload == value
+
