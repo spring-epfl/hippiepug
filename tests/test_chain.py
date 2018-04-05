@@ -89,8 +89,6 @@ def test_builder_commit_blocks(block_builder, chain_size):
                 encode(block))
 
 
-
-
 def test_empty_chain(object_store):
     """Check that empty chain raises only the expected error."""
     chain = Chain(object_store)
@@ -140,6 +138,15 @@ def test_chain_get_block_by_hash_fails_if_not_block(chain_and_hashes):
     extra_obj_hash = chain.object_store.add(encode(b'extra'))
     with pytest.raises(ValueError):
         chain._get_block_by_hash(extra_obj_hash)
+
+
+def test_chain_get_block_by_index_empty(object_store):
+    """Check that blocks are retrievable by index from empty chain."""
+    chain = Chain(object_store)
+    assert chain.get_block_by_index(
+            0, return_proof=True) == (None, [])
+    assert chain.get_block_by_index(
+            0, return_proof=False) is None
 
 
 def test_chain_get_block_by_index_from_cache(chain_and_hashes):

@@ -95,14 +95,15 @@ class Chain(object):
                  raises ``IndexError``.
         """
         if self.head_block is None:
+            if return_proof:
+                return (None, [])
             return None
-        if return_proof:
-            proof = []
         if not (0 <= index <= self.head_block.index):
             raise IndexError(
                 ("Block is beyond this chain head. Must be "
                  "0 <= {} <= {}.").format(index, self.head_block.index))
 
+        proof = []
         hash_value = self.head
         current_block = self.head_block
         while True:
@@ -110,8 +111,7 @@ class Chain(object):
                 break
 
             try:
-                if return_proof:
-                    proof.append(current_block)
+                proof.append(current_block)
                 # When found:
                 if index == current_block.index:
                     if return_proof:
@@ -122,6 +122,7 @@ class Chain(object):
                           if f >= index][0]
                 current_block = self._get_block_by_hash(hash_value)
 
+            # If something happened, likely a block was malformed.
             except Exception as e:
                 warn('Exception occured while processing block %s: %s' % (
                     current_block, e))

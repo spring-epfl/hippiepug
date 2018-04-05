@@ -67,17 +67,17 @@ class Tree(object):
         :returns: A tuple with a path to a leaf node, and a list of other
                   nodes needed to reproduce the tree root.
         """
+        # Nodes on the path from the root to the leaf.
         path_nodes = []
+        # Nodes directly adjacent to those on the path.
         closure_nodes = []
-        current_node = self.root_node
 
+        current_node = self.root_node
         while True:
             path_nodes.append(current_node)
             left_child = right_child = None
-
             try:
                 if isinstance(current_node, TreeNode):
-                    # Maybe retrive left and right child.
                     if current_node.left_hash:
                         left_child = self._get_node_by_hash(
                                 current_node.left_hash)
@@ -138,9 +138,7 @@ class Tree(object):
             if maybe_leaf is not None and (
                     hasattr(maybe_leaf, 'lookup_key')) and (
                         maybe_leaf.lookup_key == lookup_key):
-                serialized_payload = self.object_store.get(
-                        maybe_leaf.payload_hash)
-                result = serialized_payload
+                result = self.object_store.get(maybe_leaf.payload_hash)
 
         if return_proof:
             return result, (path, closure)
