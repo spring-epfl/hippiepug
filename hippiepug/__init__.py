@@ -1,4 +1,4 @@
-__version__ = '0.1.8'
+__version__ = '0.2.0'
 __title__ = 'hippiepug'
 __author__ = 'Bogdan Kulynych'
 __email__ = 'hello@bogdankulynych.me'
