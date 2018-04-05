@@ -21,7 +21,7 @@ Check out the `documentation <https://hippiepug.readthedocs.io/>`_.
    :target: https://hippiepug.readthedocs.io/?badge=latest
    :alt: Documentation status
 
-.. |build_status| image:: https://travis-ci.org/bogdan-kulynych/hippiepug.svg?branch=master
+.. |build_status| image:: https://api.travis-ci.org/spring-epfl/hippiepug.svg?branch=master
    :target: https://travis-ci.org/bogdan-kulynych/hippiepug
    :alt: Build status
 
