@@ -203,12 +203,9 @@ You can get the proof of value and lookup key inclusion from a tree view:
 .. code-block::  python
 
     value, proof = tree.get_value_by_lookup_key('foo', return_proof=True)
-    path, closure = proof
 
-For trees, the proof is split for convenience into a tuple of two lists:
-``path`` – list of nodes on the path from root to the leaf containing the
-lookup key, and ``closure`` – list of other nodes that need to be known to
-verify hashes of the tree root.
+For trees, the proof is the list of nodes on the path from root to the leaf
+containing the lookup key.
 
 The mechanism of verifying an explicit proof is the same as with chains:
 locally reproduce a store populating it with all the nodes in the proof,

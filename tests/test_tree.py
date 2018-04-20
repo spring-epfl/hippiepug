@@ -1,6 +1,3 @@
-"""
-FIXME: Trees are not finished.
-"""
 import pytest
 
 from mock import MagicMock
@@ -100,47 +97,35 @@ def test_tree_get_node_by_hash_fails_if_not_node(populated_tree):
 
 
 def test_tree_inclusion_proof(populated_tree):
-    """Manually check tree (non-)inclusion proof."""
+    """Manually check a tree inclusion proof."""
 
     # Inclusion in the right subtree.
-    _, (path, closure) = populated_tree.get_value_by_lookup_key(
+    _, path = populated_tree.get_value_by_lookup_key(
             'Z', return_proof=True)
     assert len(path) == 3
     assert path[0].pivot_prefix == 'Z'
     assert path[1].pivot_prefix == 'ZZ'
     assert path[2].lookup_key == 'Z'
 
-    assert len(closure) == 2
-    assert closure[0].pivot_prefix == 'AC'
-    assert closure[1].lookup_key == 'ZZZ'
-
     # Inclusion in the left subtree.
-    _, (path, closure) = populated_tree.get_value_by_lookup_key('AC',
-            return_proof=True)
+    _, path = populated_tree.get_value_by_lookup_key(
+            'AC', return_proof=True)
     assert len(path) == 3
     assert path[0].pivot_prefix == 'Z'
     assert path[1].pivot_prefix == 'AC'
     assert path[2].lookup_key == 'AC'
 
-    assert len(closure) == 2
-    assert closure[0].pivot_prefix == 'ZZ'
-    assert closure[1].lookup_key == 'AB'
-
     # Non-inclusion.
-    _, (path, closure) = populated_tree.get_value_by_lookup_key('ZZ',
-            return_proof=True)
+    _, path = populated_tree.get_value_by_lookup_key(
+            'ZZ', return_proof=True)
     assert len(path) == 3
     assert path[0].pivot_prefix == 'Z'
     assert path[1].pivot_prefix == 'ZZ'
     assert path[2].lookup_key == 'ZZZ'
 
-    assert len(closure) == 2
-    assert closure[0].pivot_prefix == 'AC'
-    assert closure[1].lookup_key == 'Z'
-
 
 @pytest.mark.parametrize('lookup_key', LOOKUP_KEYS)
-def test_tree_proof_verif(populated_tree, lookup_key):
+def test_tree_proof_verify(populated_tree, lookup_key):
     """Check proof of inclusion verification."""
     root = populated_tree.root
     payload, proof = populated_tree.get_value_by_lookup_key(lookup_key,
@@ -151,21 +136,21 @@ def test_tree_proof_verif(populated_tree, lookup_key):
 
 
 @pytest.mark.parametrize('lookup_key', LOOKUP_KEYS)
-def test_tree_proof_verif_fails_when_leaf_different(
+def test_tree_proof_verify_fails_when_leaf_different(
         populated_tree, lookup_key):
     """Check proof fails when lookup_key in the leaf is different."""
     root = populated_tree.root
     payload, proof = populated_tree.get_value_by_lookup_key(lookup_key,
             return_proof=True)
     store = populated_tree.object_store.__class__()
-    proof[0][-1].lookup_key = 'hacked'
+    proof[-1].lookup_key = 'hacked'
 
     assert not verify_tree_inclusion_proof(
             store, root, lookup_key, payload, proof)
 
 
 @pytest.mark.parametrize('lookup_key', LOOKUP_KEYS)
-def test_tree_proof_verif_fails_when_payload_different(
+def test_tree_proof_verify_fails_when_payload_different(
         populated_tree, lookup_key):
     """Check proof of inclusion fails when payload is different."""
     root = populated_tree.root
@@ -179,31 +164,15 @@ def test_tree_proof_verif_fails_when_payload_different(
 
 
 @pytest.mark.parametrize('lookup_key', LOOKUP_KEYS)
-def test_tree_proof_verif_fails_when_lacks_closure(
-        populated_tree, lookup_key):
-    """Check proof of inclusion fails when it lacks closure."""
-    root = populated_tree.root
-    payload, proof = populated_tree.get_value_by_lookup_key(lookup_key,
-            return_proof=True)
-    store = populated_tree.object_store.__class__()
-    path, closure = proof
-    bad_proof = (path, [])
-
-    with pytest.warns(UserWarning, match='Not enough nodes'):
-        assert not verify_tree_inclusion_proof(
-                store, root, lookup_key, payload, bad_proof)
-
-
-@pytest.mark.parametrize('lookup_key', LOOKUP_KEYS)
-def test_tree_proof_verif_fails_when_path_is_bad(
+def test_tree_proof_verify_fails_when_path_is_bad(
         populated_tree, lookup_key):
     """Check proof of inclusion fails when path is bad."""
     root = populated_tree.root
     store = populated_tree.object_store.__class__()
     payload, proof = populated_tree.get_value_by_lookup_key(lookup_key,
             return_proof=True)
-    path, closure = proof
-    bad_proof = (path[:2], closure)
+    path = proof
+    bad_proof = path[:2]
 
     assert not verify_tree_inclusion_proof(
             store, root, lookup_key, payload, bad_proof)

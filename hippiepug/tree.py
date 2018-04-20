@@ -69,9 +69,6 @@ class Tree(object):
         """
         # Nodes on the path from the root to the leaf.
         path_nodes = []
-        # Nodes directly adjacent to those on the path.
-        closure_nodes = []
-
         current_node = self.root_node
         while True:
             path_nodes.append(current_node)
@@ -85,27 +82,10 @@ class Tree(object):
                         right_child = self._get_node_by_hash(
                                 current_node.right_hash)
 
-                    integrity_issue_msg = ('Not enough nodes to validate '
-                                           'inclusion.')
                     if lookup_key < current_node.pivot_prefix:
                         current_node = left_child
-                        if right_child is not None:
-                            closure_nodes.append(right_child)
-
-                        # If right hash is specified, but right node is not
-                        # found, can not validate inclusion.
-                        elif current_node.right_hash is not None:
-                            raise ValueError(integrity_issue_msg)
-
                     else:
                         current_node = right_child
-                        if left_child is not None:
-                            closure_nodes.append(left_child)
-
-                        # Similarly, if left hash is specified, but right
-                        # node is not found, can not validate inclusion.
-                        elif current_node.left_hash is not None:
-                            raise ValueError(integrity_issue_msg)
 
                 # Stop when leaf is found.
                 elif isinstance(current_node, TreeLeaf):
@@ -121,7 +101,7 @@ class Tree(object):
                     current_node, e))
                 break
 
-        return path_nodes, closure_nodes
+        return path_nodes
 
     def get_value_by_lookup_key(self, lookup_key, return_proof=False):
         """Retrieve value by its lookup key.
@@ -131,17 +111,15 @@ class Tree(object):
         :returns: Found value or ``None``, or ``(value, proof)`` tuple if
                   ``return_proof`` is True.
         """
-        path, closure = self._get_inclusion_proof(lookup_key)
+        path = self._get_inclusion_proof(lookup_key)
         result = None
-        if path:
-            maybe_leaf = path[-1]
-            if maybe_leaf is not None and (
-                    hasattr(maybe_leaf, 'lookup_key')) and (
-                        maybe_leaf.lookup_key == lookup_key):
-                result = self.object_store.get(maybe_leaf.payload_hash)
+        if path and path[-1] is not None:
+            if hasattr(path[-1], 'lookup_key') and (
+                    path[-1].lookup_key == lookup_key):
+                result = self.object_store.get(path[-1].payload_hash)
 
         if return_proof:
-            return result, (path, closure)
+            return result, path
         else:
             return result
 
@@ -286,12 +264,10 @@ def verify_tree_inclusion_proof(store, root, lookup_key, value, proof):
     :param lookup_key: Lookup key
     :param value: Value associated with the lookup key
     :param proof: Inclusion proof
-    :type proof: tuple containing list of decoded path nodes, and decoded
-                 closure nodes.
+    :type proof: tuple containing list of decoded path nodes
     :returns: bool
     """
-    path, closure = proof
-    for node in path + closure:
+    for node in proof:
         store.add(encode(node))
     store.add(value)
     verifier_tree = Tree(store, root=root)
