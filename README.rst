@@ -40,12 +40,10 @@ This library provides implementations of two cryptographic data structures:
   verifying that block *b* extends block *a* does not require to download
   and process all blocks between *a* and *b*, but only a logarithmic amount
   of them.
-- Verifiable dictionary, implemented as a key-value Merkle tree. It guarantees
-  unique resolution, that is, a proof of inclusion of a key-value pair also
-  proves that there does not exist another value for a given key somewhere else
-  in the tree. This is useful to implement privacy-preserving accountability:
-  a party can prove that they did not lie without a need to reveal the full
-  tree.
+- Verifiable dictionary, implemented as a key-value Merkle tree that
+  guarantees unique resolution. A proof of inclusion of a key-value pair
+  in such a tree also proves that there does not exist another value for
+  a given key somewhere else in the tree.
 
 Both are meant to be used with a content-addressable storage. Each data
 structure supports logarithmic queries, and logarithmic proofs of inclusion:
