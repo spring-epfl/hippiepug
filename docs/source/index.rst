@@ -14,7 +14,7 @@ hippiepug
 
 .. toctree::
    :maxdepth: 2
-   :caption: Documentation
+   :caption: Contents
 
    quickstart
    usage
