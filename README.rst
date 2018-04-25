@@ -2,9 +2,9 @@
    :width: 100px
    :alt: Hippiepug
 
-=========
+#########
 hippiepug
-=========
+#########
 
 |pypi| |build_status| |test_cov| |docs_status|
 
@@ -63,8 +63,9 @@ case of a chain.
 
 .. getting-started-marker-do-not-remove
 
+===============
 Getting started
-~~~~~~~~~~~~~~~
+===============
 
 You can install the library from PyPI:
 
@@ -78,12 +79,13 @@ Then, the easiest way to run the tests is:
 
    python setup.py test
 
-Check out the short [usage guide](https://readthedocs.org/projects/hippiepug/usage)
+Check out the short `usage guide <https://readthedocs.org/projects/hippiepug/usage>`_.
 
 .. acks-marker-do-not-remove
 
+================
 Acknowledgements
-~~~~~~~~~~~~~~~~
+================
 
 * The library is a reimplementation of G. Danezis's `hippiehug`_ (hence
   the name).

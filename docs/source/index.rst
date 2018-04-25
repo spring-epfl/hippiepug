@@ -2,9 +2,9 @@
   :width: 150px
   :align: right
 
-=========
+#########
 hippiepug
-=========
+#########
 
 *Sublinear-lookup blockchains and efficient key-value Merkle trees*
 

@@ -3,7 +3,7 @@ Contributing
 ============
 
 Dev setup
----------
+=========
 
 To install the development dependencies, clone the package from Github, and run within the folder:
 

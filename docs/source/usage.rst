@@ -3,7 +3,7 @@ Usage guide
 ===========
 
 Storage
--------
+=======
 
 We call *content-addressable storage* a key-value store in which keys are
 cryptographic hashes of blocks or nodes, and values are the blocks or
@@ -54,11 +54,12 @@ and implement the ``hash_object`` function. You can
 also define a completely different store by implementing abstract base
 :py:class:`hippiepug.store.BaseStore`.
 
+
 Building the data structures
-----------------------------
+============================
 
 Chain
-~~~~~
+-----
 
 To append a block to a chain, first obtain an existing chain from somewhere,
 or initialize a new empty :py:class:`hippiepug.chain.Chain` object:
@@ -98,7 +99,7 @@ hashes of previous blocks.
 
 
 Tree
-~~~~
+----
 
 Unlike chains, ``hippepug`` trees can not be extended. To build a new tree,
 initialize the tree builder on a store, and set the key-value pairs to be
@@ -122,10 +123,10 @@ committed tree:
 
 
 Querying the data structures
-----------------------------
+============================
 
 Chain
-~~~~~
+-----
 
 To get a queryable view of a chain, you need to specify the storage where the
 blocks reside, and the head of the chain (hash of the latest block). You can
@@ -143,7 +144,7 @@ then retrieve blocks by their indices, or iterate.
 You can also get the latest view of a current chain while building in ``block_builder.chain``.
 
 Tree
-~~~~
+----
 
 Similarly, to get a view of a tree, you need to specify the storage, and the
 root of the tree (hash of the root node). You can then retrieve stored values
@@ -160,8 +161,9 @@ by corresponding lookup keys.
 
 .. _proofs:
 
+
 Producing and verifying proofs
-------------------------------
+==============================
 
 When the creator of a data structure and the querier use the same storage
 (e.g., external database), no additional work needs to be done. This scenario,
@@ -170,7 +172,7 @@ explictly produce and verify proofs.
 
 
 Chain
-~~~~~
+-----
 
 You can get the proof of block inclusion from a chain view:
 
@@ -196,7 +198,7 @@ in the reproduced store. This can be done using a utility
 
 
 Tree
-~~~~
+----
 
 You can get the proof of value and lookup key inclusion from a tree view:
 
@@ -223,7 +225,7 @@ using a utility :py:func:`hippiepug.tree.verify_tree_inclusion_proof`.
 
 
 Serialization
--------------
+=============
 
 ``hippiepug`` includes default binary serialization using ``msgpack`` library.
 
