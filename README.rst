@@ -31,24 +31,37 @@ Check out the `documentation <https://hippiepug.readthedocs.io/>`_.
 
 --------------
 
-.. inclusion-marker-do-not-remove
+.. description-marker-do-not-remove
 
 This library provides implementations of two cryptographic data structures:
 
-- Blockchains with log(n) lookups, implemented as deterministic hash skipchains. In this kind of blockchain verifying that block *b* extends block *a* does not require to download and process all blocks between *a* and *b*, but only a logarithmic amount of blocks.
-- Verifiable unique-resolution dictionary, implemented as a key-value Merkle tree.
+- Blockchains with log(n) sublinear traversal, implemented as hash chains 
+  based on deterministic skip-lists (skipchains). In this kind of blockchain
+  verifying that block *b* extends block *a* does not require to download
+  and process all blocks between *a* and *b*, but only a logarithmic amount
+  of them.
+- Verifiable dictionary, implemented as a key-value Merkle tree. It guarantees
+  unique resolution, that is, a proof of inclusion of a key-value pair also
+  proves that there does not exist another value for a given key somewhere else
+  in the tree. This is useful to implement privacy-preserving accountability:
+  a party can prove that they did not lie without a need to reveal the full
+  tree.
 
-Both are meant to be used with a content-addressable storage. Each data structure supports logarithmic queries, and logarithmic proofs of inclusion:
+Both are meant to be used with a content-addressable storage. Each data
+structure supports logarithmic queries, and logarithmic proofs of inclusion:
 
 +-----------------------+--------------------------+----------------------+----------------+
 |                       | Retrievals per lookup    | Inclusion proof size | Append         |
 +=======================+==========================+======================+================+
-| Hash skipchain        | ~ log(n)                 | ~ log(n)             | O(1)           |
+| Hash skipchain        | O(log(n))                | O(log(n))            | O(1)           |
 +-----------------------+--------------------------+----------------------+----------------+
-| Merkle key-value tree | ~ log(n)                 | ~ 2log(n)            | Immutable      |
+| Merkle key-value tree | O(log(n))                | O(log(n))            | Immutable      |
 +-----------------------+--------------------------+----------------------+----------------+
 
-with *n* being the size of the dictionary, or the number of blocks in the case of a chain.
+with *n* being the size of the dictionary, or the number of blocks in the
+case of a chain.
+
+.. getting-started-marker-do-not-remove
 
 Getting started
 ~~~~~~~~~~~~~~~
@@ -59,17 +72,24 @@ You can install the library from PyPI:
 
    pip install hippiepug
 
-To run the tests, you can do:
+Then, the easiest way to run the tests is:
 
 .. code-block::  bash
 
    python setup.py test
 
+Check out the short [usage guide](https://readthedocs.org/projects/hippiepug/usage)
+
+.. acks-marker-do-not-remove
+
 Acknowledgements
 ~~~~~~~~~~~~~~~~
 
-* The library is a reimplementation of G. Danezis's `hippiehug`_ (hence the name).
-* This work is funded by the `NEXTLEAP project`_ within the European Union’s Horizon 2020 Framework Programme for Research and Innovation (H2020-ICT-2015, ICT-10-2015) under grant agreement 688722.
+* The library is a reimplementation of G. Danezis's `hippiehug`_ (hence
+  the name).
+* This work is funded by the `NEXTLEAP project`_ within the European Union’s
+  Horizon 2020 Framework Programme for Research and Innovation (H2020-ICT-2015,
+  ICT-10-2015) under grant agreement 688722.
 * The hippie pug logo kindly donated by `M. Naiem`_.
 
 .. _hippiehug:  https://github.com/gdanezis/rousseau-chain

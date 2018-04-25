@@ -56,22 +56,22 @@ setup(
         'test': TEST_REQUIRES
     },
     classifiers=[
-        "Development Status :: 3 - Alpha",
-	"Intended Audience :: Developers",
-	"Natural Language :: English",
-	"Operating System :: OS Independent",
-	"Programming Language :: Python",
-	"Programming Language :: Python :: 2",
-	"Programming Language :: Python :: 2.7",
-	"Programming Language :: Python :: 3",
-	"Programming Language :: Python :: 3.4",
-	"Programming Language :: Python :: 3.5",
-	"Programming Language :: Python :: 3.6",
-	"Programming Language :: Python :: Implementation :: CPython",
-	"Topic :: Software Development :: Libraries :: Python Modules",
-        "Topic :: Security :: Cryptography",
-        "Topic :: Database",
-        ("License :: OSI Approved :: GNU Affero General Public License v3 "
-         "or later (AGPLv3+)")
+        'Development Status :: 3 - Alpha',
+	'Intended Audience :: Developers',
+	'Natural Language :: English',
+	'Operating System :: OS Independent',
+	'Programming Language :: Python',
+	'Programming Language :: Python :: 2',
+	'Programming Language :: Python :: 2.7',
+	'Programming Language :: Python :: 3',
+	'Programming Language :: Python :: 3.4',
+	'Programming Language :: Python :: 3.5',
+	'Programming Language :: Python :: 3.6',
+	'Programming Language :: Python :: Implementation :: CPython',
+	'Topic :: Software Development :: Libraries :: Python Modules',
+        'Topic :: Security :: Cryptography',
+        'Topic :: Database',
+        ('License :: OSI Approved :: GNU Affero General Public License v3 '
+         'or later (AGPLv3+)')
     ],
 )
