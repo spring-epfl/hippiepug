@@ -2,9 +2,9 @@
 License
 =======
 
-.. include:: ../../LICENSE
+.. include:: ../../LICENSE.txt
 
 Notice
 ======
 
-.. include:: ../../NOTICE
+.. include:: ../../NOTICE.txt
