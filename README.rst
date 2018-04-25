@@ -79,7 +79,7 @@ Then, the easiest way to run the tests is:
 
    python setup.py test
 
-Check out the short `usage guide <https://readthedocs.org/projects/hippiepug/usage>`_.
+Be sure to check out the `usage guide <https://hippiepug.readthedocs.org/usage.html>`_.
 
 .. acks-marker-do-not-remove
 
