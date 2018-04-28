@@ -6,7 +6,7 @@
 hippiepug
 #########
 
-|pypi| |build_status| |test_cov| |docs_status|
+|pypi| |build_status| |test_cov| |docs_status| |license|
 
 
 Sublinear-lookup blockchains and efficient key-value Merkle trees.
