@@ -17,6 +17,10 @@ Check out the `documentation <https://hippiepug.readthedocs.io/>`_.
    :target: https://pypi.org/project/hippiepug/
    :alt: PyPI version
 
+.. |license| image:: https://img.shields.io/pypi/l/hippiepug.svg
+   :target: https://pypi.org/project/hippiepug/
+   :alt: License
+
 .. |docs_status| image:: https://readthedocs.org/projects/hippiepug/badge/?version=latest
    :target: https://hippiepug.readthedocs.io/?badge=latest
    :alt: Documentation status
