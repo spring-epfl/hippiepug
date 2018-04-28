@@ -71,7 +71,6 @@ setup(
 	'Topic :: Software Development :: Libraries :: Python Modules',
         'Topic :: Security :: Cryptography',
         'Topic :: Database',
-        ('License :: OSI Approved :: GNU Affero General Public License v3 '
-         'or later (AGPLv3+)')
+        'License :: OSI Approved :: MIT License',
     ],
 )

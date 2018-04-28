@@ -5,7 +5,7 @@ __email__ = 'hello@bogdankulynych.me'
 __copyright__ = '2018 by Bogdan Kulynych (EPFL SPRING Lab)'
 __description__ = 'Sublinear-lookup blockchains and efficient key-value Merkle trees with a flexible storage backend'
 __url__ = 'https://github.com/spring-epfl/hippiepug'
-__license__ = 'AGPLv3+'
+__license__ = 'MIT'
 
 
 from .chain import BlockBuilder, Chain
