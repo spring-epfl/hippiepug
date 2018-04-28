@@ -92,7 +92,7 @@ def test_tree_get_by_lookup_key(populated_tree):
 def test_tree_get_node_by_hash_fails_if_not_node(populated_tree):
     """Check that exception is raised if the object is not a node."""
     extra_obj_hash = populated_tree.object_store.add(encode(b'extra'))
-    with pytest.raises(ValueError):
+    with pytest.raises(TypeError):
         populated_tree._get_node_by_hash(extra_obj_hash)
 
 
@@ -126,7 +126,7 @@ def test_tree_inclusion_proof(populated_tree):
 
 @pytest.mark.parametrize('lookup_key', LOOKUP_KEYS)
 def test_tree_proof_verify(populated_tree, lookup_key):
-    """Check proof of inclusion verification."""
+    """Check regular proof of inclusion verification."""
     root = populated_tree.root
     payload, proof = populated_tree.get_value_by_lookup_key(lookup_key,
             return_proof=True)
@@ -164,14 +164,13 @@ def test_tree_proof_verify_fails_when_payload_different(
 
 
 @pytest.mark.parametrize('lookup_key', LOOKUP_KEYS)
-def test_tree_proof_verify_fails_when_path_is_bad(
+def test_tree_proof_verify_fails_when_path_is_incomplete(
         populated_tree, lookup_key):
-    """Check proof of inclusion fails when path is bad."""
+    """Check proof of inclusion fails when path is incomplete."""
     root = populated_tree.root
     store = populated_tree.object_store.__class__()
-    payload, proof = populated_tree.get_value_by_lookup_key(lookup_key,
-            return_proof=True)
-    path = proof
+    payload, path = populated_tree.get_value_by_lookup_key(
+            lookup_key, return_proof=True)
     bad_proof = path[:2]
 
     assert not verify_tree_inclusion_proof(

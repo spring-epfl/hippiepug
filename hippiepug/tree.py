@@ -11,6 +11,16 @@ from .store import IntegrityValidationError
 from .pack import encode, decode
 
 
+def _is_leaf(node):
+    """Check if a node is a leaf node."""
+    return isinstance(node, TreeLeaf)
+
+
+def _is_inner_node(node):
+    """Check if a node is an inner tree node."""
+    return isinstance(node, TreeNode)
+
+
 class Tree(object):
     """
     View of a Merkle tree.
@@ -31,8 +41,7 @@ class Tree(object):
        * :py:class:`hippiepug.chain.Chain`
     """
 
-    def __init__(self, object_store, root,
-                 cache=None):
+    def __init__(self, object_store, root, cache=None):
         self.object_store = object_store
         self.root = root
         self._cache = cache or {}
@@ -40,13 +49,16 @@ class Tree(object):
     def _get_node_by_hash(self, node_hash):
         """Unsafely retrieve node by its hash.
 
+        After retrieving, decodes the node.
+
         .. warning::
             This function does not check if the retrieved node
             belongs to this chain.
 
-        :raises: ``ValueError`` if retrieved object is not
+        :raises: ``TypeError`` if retrieved object is not
                  a tree node.
         """
+        # Get the node from cache if it is in the cache.
         if node_hash in self._cache:
             return self._cache[node_hash]
 
@@ -54,9 +66,8 @@ class Tree(object):
                 node_hash, check_integrity=True)
         if serialized_node is not None:
             node = decode(serialized_node)
-            if not isinstance(node, TreeLeaf) and not isinstance(
-                    node, TreeNode):
-                raise ValueError('Object with this hash is not a tree node.')
+            if not _is_leaf(node) and not _is_inner_node(node):
+                raise TypeError('Object with this hash is not a tree node.')
             self._cache[node_hash] = node
             return node
 
@@ -74,28 +85,30 @@ class Tree(object):
             path_nodes.append(current_node)
             left_child = right_child = None
             try:
-                if isinstance(current_node, TreeNode):
-                    if current_node.left_hash:
-                        left_child = self._get_node_by_hash(
+                # If current node is an intermediate node, get its left or
+                # right child according to the pivot value.
+                if _is_inner_node(current_node):
+                    if lookup_key < current_node.pivot_prefix:
+                        current_node = self._get_node_by_hash(
                                 current_node.left_hash)
-                    if current_node.right_hash:
-                        right_child = self._get_node_by_hash(
+                    else:
+                        current_node = self._get_node_by_hash(
                                 current_node.right_hash)
 
-                    if lookup_key < current_node.pivot_prefix:
-                        current_node = left_child
-                    else:
-                        current_node = right_child
+                    # If a child is not found, cannot continue the lookup.
+                    if current_node is None:
+                        raise ValueError('A required node was not found')
 
-                # Stop when leaf is found.
-                elif isinstance(current_node, TreeLeaf):
+                # Stop when the current node is a leaf.
+                elif _is_leaf(current_node):
                     break
 
-                # Not a tree node.
+                # Not a tree node. Likely a malformed object.
                 else:
                     raise TypeError('Invalid node type.')
 
-            # If something happened, likely a node was malformed.
+            # Warn that the lookup failed, and return whatever was found
+            # on the path.
             except Exception as e:
                 warn('Exception occured when handling node %s: %s' % (
                     current_node, e))
@@ -108,14 +121,16 @@ class Tree(object):
 
         :param lookup_key: Lookup key
         :param return_proof: Whether to return inclusion proof
-        :returns: Found value or ``None``, or ``(value, proof)`` tuple if
-                  ``return_proof`` is True.
+        :returns: Only the value when ``return_proof`` is False, and a
+                  ``(value, proof)`` tuple when ``return_proof`` is True.
+                  A value is ``None`` when the lookup key was not found.
         """
         path = self._get_inclusion_proof(lookup_key)
         result = None
         if path and path[-1] is not None:
-            if hasattr(path[-1], 'lookup_key') and (
-                    path[-1].lookup_key == lookup_key):
+            # Check whether the last node in the path is a leaf, and its
+            # lookup key is what we were looking for.
+            if _is_leaf(path[-1]) and (path[-1].lookup_key == lookup_key):
                 result = self.object_store.get(path[-1].payload_hash)
 
         if return_proof:
@@ -132,7 +147,11 @@ class Tree(object):
             return False
 
     def __getitem__(self, lookup_key):
-        """Retrieve value by its lookup key."""
+        """Retrieve value by its lookup key.
+
+        :returns: Corresponding value
+        :raises: ``KeyError`` when the lookup key was not found.
+        """
         value = self.get_value_by_lookup_key(lookup_key, return_proof=False)
         if value is None:
             raise KeyError('The item with given lookup key was not found.')
@@ -205,9 +224,9 @@ class TreeBuilder(object):
             right_child = right_subtree_nodes[0]
 
             def get_node_key(node):
-                if isinstance(node, TreeLeaf):
+                if _is_leaf(node):
                     return node.lookup_key
-                elif isinstance(node, TreeNode):
+                elif _is_inner_node(node):
                     return node.pivot_prefix
 
             if left_subtree_nodes:
@@ -220,9 +239,9 @@ class TreeBuilder(object):
             # Compute hashes of direct children.
             left_hash = None
             right_hash = None
-            left_hash=self.object_store.hash_object(
+            left_hash = self.object_store.hash_object(
                 encode(left_subtree_nodes[0]))
-            right_hash=self.object_store.hash_object(
+            right_hash = self.object_store.hash_object(
                 encode(right_subtree_nodes[0]))
 
             pivot_node = TreeNode(pivot_prefix=pivot_prefix,
