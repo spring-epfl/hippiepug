@@ -1,5 +1,5 @@
 """
-Tools for building and interpreting hash skipchains.
+Tools for building and interpreting skipchains.
 """
 
 from warnings import warn
@@ -9,7 +9,7 @@ from .pack import encode, decode
 
 
 class Chain(object):
-    """Hash skipchain (hash chain with skip-list pointers).
+    """Skipchain (hash chain with skip-list pointers).
 
     To add a new block to a chain, use :py:class:`BlockBuilder`.
 

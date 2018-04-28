@@ -39,15 +39,14 @@ Check out the `documentation <https://hippiepug.readthedocs.io/>`_.
 
 This library provides implementations of two cryptographic data structures:
 
-- Blockchains with log(n) sublinear traversal, implemented as hash chains 
-  based on deterministic skip-lists (skipchains). In this kind of blockchain
-  verifying that block *b* extends block *a* does not require to download
-  and process all blocks between *a* and *b*, but only a logarithmic amount
-  of them.
+- Blockchains with log(n) sublinear traversal, implemented as high-integrity
+  deterministic skip-lists (skipchains). In this kind of blockchain verifying
+  that block *b* extends block *a* does not require to download and process
+  all blocks between *a* and *b*, but only a logarithmic amount of them.
 - Verifiable dictionary, implemented as a key-value Merkle tree that
-  guarantees unique resolution. A proof of inclusion of a key-value pair
-  in such a tree also proves that there does not exist another value for
-  a given key somewhere else in the tree.
+  guarantees unique resolution. A proof of inclusion of a key-value pair in
+  such a tree also proves that there does not exist another value for a given
+  key somewhere else in the tree.
 
 Both are meant to be used with a content-addressable storage. Each data
 structure supports logarithmic queries, and logarithmic proofs of inclusion:
