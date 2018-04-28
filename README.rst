@@ -54,9 +54,9 @@ structure supports logarithmic queries, and logarithmic proofs of inclusion:
 +-----------------------+--------------------------+----------------------+----------------+
 |                       | Retrievals per lookup    | Inclusion proof size | Append         |
 +=======================+==========================+======================+================+
-| Hash skipchain        | O(log(n))                | O(log(n))            | O(1)           |
+| Skipchain             | O(log(n))                | O(log(n))            | O(1)           |
 +-----------------------+--------------------------+----------------------+----------------+
-| Merkle key-value tree | O(log(n))                | O(log(n))            | Immutable      |
+| Key-value Merkle tree | O(log(n))                | O(log(n))            | Immutable      |
 +-----------------------+--------------------------+----------------------+----------------+
 
 with *n* being the size of the dictionary, or the number of blocks in the
