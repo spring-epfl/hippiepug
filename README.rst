@@ -62,6 +62,8 @@ structure supports logarithmic queries, and logarithmic proofs of inclusion:
 with *n* being the size of the dictionary, or the number of blocks in the
 case of a chain.
 
+The theoretical details are in the [paper](https://claimchain.github.io).
+
 .. getting-started-marker-do-not-remove
 
 ===============
