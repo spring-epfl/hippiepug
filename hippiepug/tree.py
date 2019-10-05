@@ -218,23 +218,7 @@ class TreeBuilder(object):
             left_subtree_nodes = self._make_subtree(left_partition)
             right_subtree_nodes = self._make_subtree(right_partition)
 
-            # Compute minimal lookup prefixes
-            pivot_prefixes = [pivot_prefix]
-            left_child = left_subtree_nodes[0]
-            right_child = right_subtree_nodes[0]
-
-            def get_node_key(node):
-                if _is_leaf(node):
-                    return node.lookup_key
-                elif _is_inner_node(node):
-                    return node.pivot_prefix
-
-            if left_subtree_nodes:
-                pivot_prefixes.append(get_node_key(left_child))
-            if right_subtree_nodes:
-                pivot_prefixes.append(get_node_key(right_child))
-            common_prefix = os.path.commonprefix(pivot_prefixes)
-            pivot_prefix = pivot_prefix[:max(1, len(common_prefix) + 1)]
+            # TODO: Can we reliably truncate the prefixes?
 
             # Compute hashes of direct children.
             left_hash = None
@@ -292,4 +276,3 @@ def verify_tree_inclusion_proof(store, root, lookup_key, value, proof):
     verifier_tree = Tree(store, root=root)
     retrieved_payload = verifier_tree.get_value_by_lookup_key(lookup_key)
     return retrieved_payload == value
-

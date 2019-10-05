@@ -1,6 +1,7 @@
 import pytest
 
 from mock import MagicMock
+from hashlib import sha256
 
 from hippiepug.tree import TreeBuilder, Tree
 from hippiepug.tree import verify_tree_inclusion_proof
@@ -50,7 +51,7 @@ def test_builder(populated_tree):
     assert ab_leaf.lookup_key == 'AB'
     assert ac_leaf.lookup_key == 'AC'
 
-    assert zz_node.pivot_prefix == 'ZZ'
+    assert zz_node.pivot_prefix == 'ZZZ'
     assert zzz_leaf.lookup_key == 'ZZZ'
     assert z_leaf.lookup_key == 'Z'
 
@@ -104,7 +105,7 @@ def test_tree_inclusion_proof(populated_tree):
             'Z', return_proof=True)
     assert len(path) == 3
     assert path[0].pivot_prefix == 'Z'
-    assert path[1].pivot_prefix == 'ZZ'
+    assert path[1].pivot_prefix == 'ZZZ'
     assert path[2].lookup_key == 'Z'
 
     # Inclusion in the left subtree.
@@ -120,8 +121,8 @@ def test_tree_inclusion_proof(populated_tree):
             'ZZ', return_proof=True)
     assert len(path) == 3
     assert path[0].pivot_prefix == 'Z'
-    assert path[1].pivot_prefix == 'ZZ'
-    assert path[2].lookup_key == 'ZZZ'
+    assert path[1].pivot_prefix == 'ZZZ'
+    assert path[2].lookup_key == 'Z'
 
 
 @pytest.mark.parametrize('lookup_key', LOOKUP_KEYS)
@@ -175,3 +176,16 @@ def test_tree_proof_verify_fails_when_path_is_incomplete(
 
     assert not verify_tree_inclusion_proof(
             store, root, lookup_key, payload, bad_proof)
+
+
+@pytest.mark.parametrize('num_keys', [10**i for i in range(1, 5)])
+def test_tree_key_density(object_store, num_keys):
+    builder = TreeBuilder(object_store)
+    for i in range(num_keys):
+        key = str(i).encode()
+        builder[key] = sha256(key).digest()
+
+    tree = builder.commit()
+    for i in range(num_keys):
+        key = str(i).encode()
+        assert tree[key] == sha256(key).digest()
