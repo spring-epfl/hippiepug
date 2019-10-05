@@ -24,7 +24,7 @@ import msgpack
 from .struct import ChainBlock, TreeNode, TreeLeaf
 
 
-PROTO_VERSION = 0
+PROTO_VERSION = 1
 
 CHAIN_BLOCK_MARKER = 0
 TREE_NODE_MARKER = 1
@@ -67,7 +67,7 @@ def msgpack_decoder(serialized_obj):
     try:
         proto_version, marker, obj_repr = msgpack.unpackb(
                 serialized_obj,
-                encoding='utf-8')
+                raw=False)
     except Exception as e:
         raise ValueError('Object could not be decoded: %s' % e)
 
