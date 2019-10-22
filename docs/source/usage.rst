@@ -31,7 +31,7 @@ Using object stores
 ``hippiepug`` includes an instantation of an in-memory content-addressable
 storage that uses SHA256 for hashes:
 :py:class:`hippiepug.store.Sha256DictStore`. By default, the hashes are
-truncated to 8 bytes. 
+truncated to 8 bytes.
 
 .. code-block::  python
 
@@ -145,7 +145,7 @@ Querying the data structures
 Chain
 -----
 
-To get a queryable view of a chain, you need to specify the storage where its 
+To get a queryable view of a chain, you need to specify the storage where its
 blocks reside, and the head of the chain (hash of the latest block). You can
 then retrieve blocks by their indices, or iterate.
 
@@ -199,10 +199,10 @@ You can get the proof of block inclusion from a chain view:
 
 A proof is a subset of blocks between head block and the requested block.
 
-To verify the proof, the querier needs to locally reproduce a store, 
+To verify the proof, the querier needs to locally reproduce a store,
 populating it with the blocks in the proof, and then query the chain
-in the reproduced store normally. A convenience utility 
-:py:func:`hippiepug.chain.verify_chain_inclusion_proof` does all of 
+in the reproduced store normally. A convenience utility
+:py:func:`hippiepug.chain.verify_chain_inclusion_proof` does all of
 this internally, and only returns the verification result:
 
 .. code-block:: python
@@ -236,7 +236,7 @@ internally and returns the verification result:
     from hippiepug.tree import verify_tree_inclusion_proof
 
     verification_store = Sha256DictStore()
-    verify_tree_inclusion_proof(verification_store, tree.head,
+    verify_tree_inclusion_proof(verification_store, tree.root,
                                 lookup_key='foo', value=b'bar',
                                 proof=proof)  # True.
 
@@ -276,4 +276,3 @@ Alternatively, you can also limit their usage to a specific context:
 
     with my_params.as_default():
         encode(b'stub')  # b'encoded!'
-
